@@ -1,5 +1,5 @@
 # BattEry-Simulation-Toolbox (BEST)
-Version 1 (published 12-12-2019)
+Version 0.1.0 (issued 12-12-2019)
 
 A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for analysis and control. 
 
@@ -7,6 +7,7 @@ A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for 
 ### Current features
 The implementation has the following currently (tested) features:
 - Simulation of the Simplified DFN (SDFN) model as presented in [1]. 
+- 
 
 ### Coming features
 BEST will be periodically upgraded, and the current planned features are as follows: 
@@ -40,6 +41,11 @@ An example file is included that shows how to use the toolbox.
 ## Authors
 Zuan Khalik (https://www.tue.nl/en/research/researchers/zuan-khalik/)
 
+## References
+[1] Z. Khalik, H.J. Bergveld, M.C.F. Donkers, "On Trade-offs Between Computational Complexity and Accuracy of Electrochemistry-based Battery Models", in Conference on Decision & Control, 2019
+
 ## License
 
 This project is licensed under the BSD 3-Clause License - see the [LICENSE.md](LICENSE.md) file for details
+
+
