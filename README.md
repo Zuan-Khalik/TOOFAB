@@ -7,7 +7,6 @@ A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for 
 ### Current features
 The implementation has the following currently (tested) features:
 - Simulation of the Simplified DFN (SDFN) model as presented in [1]. 
-- 
 
 ### Coming features
 BEST will be periodically upgraded, and the current planned features are as follows: 
