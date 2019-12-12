@@ -9,7 +9,7 @@ The implementation has the following currently (tested) features:
 - Simulation of the Simplified DFN (SDFN) model as presented in [1]. 
 
 ### Coming features
-BEST will be periodically upgraded, and the current planned features are as follows: 
+BEST will be continuously upgraded, and the current planned features are as follows: 
 - Fast simulation of the full DFN model (without simplifications), including concentration-dependent parameters
 - The ability to apply several simplifications to allow for a trade-off between accuracy and computation time. 
 - Thermal dynamics through a lumped thermal model. 
