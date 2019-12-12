@@ -14,6 +14,7 @@ BEST will be continuously upgraded, and the current planned features are as foll
 - The ability to apply several simplifications to allow for a trade-off between accuracy and computation time. 
 - Thermal dynamics through a lumped thermal model. 
 - Battery ageing model 
+- Improved exception handling 
 
 ## Getting Started
 These instructions will set you up to use the BattEry Simulation Toolbox (BEST).
