@@ -38,8 +38,8 @@ where
 An example file is included that shows how to use the toolbox. 
 
 ## Authors
-Zuan Khalik (
+Zuan Khalik (https://www.tue.nl/en/research/researchers/zuan-khalik/)
 
 ## License
 
-This project is licensed under the 3-Clause BSD License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the BSD 3-Clause License - see the [LICENSE.md](LICENSE.md) file for details
