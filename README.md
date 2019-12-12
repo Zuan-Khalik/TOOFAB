@@ -23,7 +23,7 @@ This toolbox only requires a working version of MATLAB.
 The toolbox has been tested with MATLAB R2019b, but should work with any MATLAB version equal to or newer than MATLAB R2016b. This compatibility requirement comes from the feature that allows local functions, added to MATLAB since version R2016b. A legacy version compatible with older MATLAB versions is planned to be added in the future, or upon request. 
 
 ### Using the toolbox
-The battery simulation toolbox can be interfaced with the DFN function defined as
+BEST can be interfaced with the DFN function defined as
 
 out = DFN(input_current,tf,init_cond,param)
 
