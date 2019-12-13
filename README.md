@@ -4,6 +4,8 @@ Version 0.1.0 (issued 13-12-2019)
 A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for analysis and control. 
 
 ## Features
+The toolbox is currently in its initial stages, so some planned features are not yet available. It is also possible to request features, if desired. In that case, please contact the author (z.khalik@tue.nl). 
+
 ### Current features
 The implementation has the following currently (tested) features:
 - Simulation of the Simplified DFN (SDFN) model as presented in [1]. 
@@ -37,6 +39,8 @@ where
 - param is a struct containing all the model parameters, and simulation parameters, such as the temporal and spatial grid discretization variables.
 
 An example file is included that shows how to use the toolbox. 
+
+If you find any problems with the toolbox, please contact the author (z.khalik@tue.nl)! It will be highly appreciated. 
 
 ## Authors
 Zuan Khalik (https://www.tue.nl/en/research/researchers/zuan-khalik/)
