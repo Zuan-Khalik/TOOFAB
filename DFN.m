@@ -342,8 +342,10 @@ cs0_pos = p.s0_pos*p.cs_max_pos;
 cs100_pos = p.s100_pos*p.cs_max_pos;
 
 if init_cond >2
-    x = linspace(0,1,10000); 
-    EMF = p.U_pos((p.s100_pos-p.s0_pos)*x+p.s0_pos)-p.U_neg((p.s100_neg-p.s0_neg)*x+p.s0_neg); 
+    x = linspace(0,1,10000)'; 
+    U_pos = p.U_pos((p.s100_pos-p.s0_pos)*x+p.s0_pos);
+    U_neg = p.U_neg((p.s100_neg-p.s0_neg)*x+p.s0_neg);
+    EMF = reshape(U_pos,[1 length(U_pos)])-reshape(U_neg, [1 length(U_neg)]);
     soc_init = interp1(EMF,x,init_cond,'linear','extrap'); 
     if soc_init <0 || soc_init>1
         warning('Initial SOC not in the range of [0,1]')

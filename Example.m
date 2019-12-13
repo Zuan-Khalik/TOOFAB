@@ -6,7 +6,7 @@ load i_app_WLTP.mat
 
 %Select which parameter set to simulate with. Choice between 'HP' (High
 %Power) or 'HE' (High Energy)
-parameter_set = 'HE'; 
+parameter_set = 'HP'; 
 
 %Define initial state-of-charge (SOC)
 soc_init = 0.8; 
