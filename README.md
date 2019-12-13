@@ -33,7 +33,7 @@ out = DFN(input_current,tf,init_cond,param)
 where
 
 - out is a MATLAB struct containing all the output variables, such as the output voltage, the concentrations and the potentials.
-- input_current contains information about the current profile. This field can be provided either as an array which contains the current levels at each specified time sample, or as a function which takes the output voltage, current, concentration and potentials, and the parameters as input and mainly provides the current as output. The latter form is especially useful when the battery is desired to be controlled in a closed-loop.
+- input_current contains information about the current profile. This field can be provided either as an array which contains the current levels at each specified time sample, or as a function which takes the output voltage, current, concentration and potentials, and the parameters as input and mainly provides the current as output. The latter form is especially useful when the battery is desired to be controlled in closed-loop.
 - tf specifies the simulation time
 - init_cond specifies the initial condition, which can be either an initial State-of-Charge (SoC), as a value between 0 and 1, or an initial voltage. If init_cond is chosen to be larger than 2, the toolbox assumes that init_cond specifies an initial voltage. 
 - param is a struct containing all the model parameters, and simulation parameters, such as the temporal and spatial grid discretization variables.
