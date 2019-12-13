@@ -40,7 +40,8 @@ where
 
 An example file is included that shows how to use the toolbox. 
 
-If you find any problems with the toolbox, please contact the author (z.khalik@tue.nl)! It will be highly appreciated. 
+## Issues
+Since the toolbox is still in an initial stage, it could happen that you encounter errors or unexpected behavior under certain circumstances. If you find any problems with the toolbox, please contact me (z.khalik@tue.nl). I am open to assist you with the use of the toolbox for your usecase. 
 
 ## Authors
 Zuan Khalik (https://www.tue.nl/en/research/researchers/zuan-khalik/)
