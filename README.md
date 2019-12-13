@@ -1,5 +1,5 @@
 # BattEry-Simulation-Toolbox (BEST)
-Version 0.1.0 (issued 12-12-2019)
+Version 0.1.0 (issued 13-12-2019)
 
 A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for analysis and control. 
 
