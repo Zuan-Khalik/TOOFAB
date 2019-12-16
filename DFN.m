@@ -1,28 +1,36 @@
-%-------------------------------------------------------------------------%
-%- Author: Zuan Khalik ---------------------------------------------------%
-%- Version last change: 23-07-2019 ---------------------------------------%
-%-------------------------------------------------------------------------%
-%- Simulation of the DFN model -------------------------------------------%
-%-------------------------------------------------------------------------%
-%- This function runs a simulation of the DFN model based on the inputs: -%
-%- i_app, t, soc_init. ---------------------------------------------------%
-%----- - i_app is defined as a vector which contains the applied current -%
-%--------- in Amperes at each time step. ---------------------------------%
-%----- - t specifies the time samples for the simulation, and consists ---%
-%--------- of regularly spaced time samples: 0:dt:Tfinal -----------------%
-%----- - soc_init defines the initial state-of-charge. Based on the ------%
-%--------- initial SOC, initial conditions are computed for the states ---%
-%--------- in the simulation. The SOC is a value between 0 and 1. --------%
-%----- - par_name is the handle to the seperate parameter set file -------%
-%----- - grid_param is an optional parameter to input a vector of --------%
-%------- grid parameters defined as [n_n n_s n_p n_rn n_rp] --------------%
-%-------------------------------------------------------------------------%
-%- The function outputs the struct "out", which contains: ----------------%
-%----- - out.cs_bar: the concentration at the solid/electrolyte interface-%
-%----- - out.ce: the concentration in the electrolyte phase --------------%
-%----- - out.V: output voltage of the battery ----------------------------%
-%- Additional outputs can be defined in the out struct -------------------%
-%-------------------------------------------------------------------------%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Simulation of the DFN model
+% 
+% Inputs: 
+%    - input_current: contains information about the current profile. 
+%      This field can be provided either as an array which contains the 
+%      current levels at each specified time sample, or as a function 
+%      which takes the output voltage, current, concentration and 
+%      potentials, and the parameters as input and mainly provides the 
+%      current as output. The latter form is especially useful when the 
+%      battery is desired to be controlled in closed-loop.
+%    - tf specifies the simulation time in seconds
+%    - init_cond specifies the initial condition, which can be either an 
+%      initial State-of-Charge (SoC), as a value between 0 and 1, or an 
+%      initial voltage. If init_cond is chosen to be larger than 2, the 
+%      toolbox assumes that init_cond specifies an initial voltage.
+%    - param is a struct containing all the model parameters, and 
+%      simulation parameters, such as the temporal and spatial grid 
+%      discretization variables.
+% 
+% Outputs:
+%    - out is a MATLAB struct containing all the output variables, such as 
+%      the output voltage, the concentrations and the potentials.
+%
+% This file is a part of the BattEry Simulation Toolbox (BEST)
+% Github: https://github.com/Zuan-Khalik/Battery-Simulation-Toolbox
+%
+% Author: Zuan Khalik (z.khalik@tue.nl)
+%
+% BEST is licensed under the BSD 3-Clause License
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 function out = DFN(input_current,tf,init_cond,param)
 p = param; 

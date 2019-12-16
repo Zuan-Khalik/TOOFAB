@@ -1,3 +1,15 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Example script on how to use the BEST toolbox
+%
+% This file is a part of the BattEry Simulation Toolbox (BEST)
+% Github: https://github.com/Zuan-Khalik/Battery-Simulation-Toolbox
+%
+% Author: Zuan Khalik (z.khalik@tue.nl)
+%
+% BEST is licensed under the BSD 3-Clause License
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 clear all; close all 
 
 %% Prepare parameters

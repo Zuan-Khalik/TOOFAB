@@ -1,3 +1,16 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Function to plot the output voltage and several internal variables
+%
+% This file is a part of the BattEry Simulation Toolbox (BEST)
+% Github: https://github.com/Zuan-Khalik/Battery-Simulation-Toolbox
+%
+% Author: Zuan Khalik (z.khalik@tue.nl)
+%
+% BEST is licensed under the BSD 3-Clause License
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
 function make_plots(out,eval_time,plotcolor,plotcolor_V,fig_handle,set_scaleheight)
 figure(fig_handle)
 fontsize = 13; 

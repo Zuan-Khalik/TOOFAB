@@ -1,3 +1,19 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Parameter set obtained from [1] for simulation
+%
+% This file is a part of the BattEry Simulation Toolbox (BEST)
+% Github: https://github.com/Zuan-Khalik/Battery-Simulation-Toolbox
+%
+% Author: Zuan Khalik (z.khalik@tue.nl)
+%
+% BEST is licensed under the BSD 3-Clause License
+%
+% [1] K. A. Smith, C. D. Rahn, and C.-Y. Wang, “Control oriented 1d 
+% electrochemical model of lithium ion battery,” 
+% Energy Convers. Manag., 2007.
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 function p = parameters_KS(gridsize)
 %-------------------------------------------------------------------------%

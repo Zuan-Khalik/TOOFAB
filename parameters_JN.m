@@ -1,3 +1,21 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Parameter set obtained from [1] for simulation
+%
+% This file is a part of the BattEry Simulation Toolbox (BEST)
+% Github: https://github.com/Zuan-Khalik/Battery-Simulation-Toolbox
+%
+% Author: Zuan Khalik (z.khalik@tue.nl)
+%
+% BEST is licensed under the BSD 3-Clause License
+%
+% [1] N. Jin, D. L. Danilov, P. M. Van den Hof, and M. Donkers, “Parameter
+% estimation of an electrochemistry-based lithium-ion battery model
+% using a two-step procedure and a parameter sensitivity analysis,”
+% Int. J. Energ. Res., 2018.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
 function p = parameters_JN(gridsize)
 %-------------------------------------------------------------------------%
 %--- Configuration parameters --------------------------------------------%
@@ -29,7 +47,6 @@ p.tol = 1e-2;                                                     %Tolerance for
 p.iter_max = 1e4;                                                          %Maximum iterations for the inner loop
 p.gamma = 1;                                                                %Damping coefficient for update of states
 p.verbose = 0;
-% Temperature defined to be constant for now. 
 p.T_amb = 303;
 p.itp_grid = 100; 
 p.output_interpolated_states = 0; 
