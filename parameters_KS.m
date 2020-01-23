@@ -1,20 +1,23 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Parameter set obtained from [1] for simulation
+% Parameters of the model presented in [2] with some changes presented in
+% [1]
 %
-% This file is a part of the BattEry Simulation Toolbox (BEST)
+% This file is a part of the TOOlbox for BAttery SIMulation (TOBASIM)
+%
 % Github: https://github.com/Zuan-Khalik/Battery-Simulation-Toolbox
 %
 % Author: Zuan Khalik (z.khalik@tue.nl)
 %
-% BEST is licensed under the BSD 3-Clause License
+% TOBASIM is licensed under the BSD 3-Clause License
 %
-% [1] K. A. Smith, C. D. Rahn, and C.-Y. Wang, “Control oriented 1d 
-% electrochemical model of lithium ion battery,” 
-% Energy Convers. Manag., 2007.
-% 
+% References
+% [1] Khalik et al., On trade-offs between Computational Complexity and 
+% Accuracy of Electrochemistry-based Battery Models, Journal of the 
+% Electrochemical Society, 2020, submitted
+% [2] Smith et al., Control oriented 1d electrochemical model of lithium 
+% ion battery, Energy Conversion Management, 2007
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-
 function p = parameters_KS(gridsize)
 %-------------------------------------------------------------------------%
 %--- Configuration parameters --------------------------------------------%
@@ -25,11 +28,11 @@ function p = parameters_KS(gridsize)
 %-------------------------------------------------------------------------%
 % Number of nodes (spatial discretization)
 if nargin <1
-    p.nn = 10;
-    p.ns = 10;
-    p.np = 10;
-    p.nrn = 6;
-    p.nrp = 6;
+    p.nn = 8;
+    p.ns = 8;
+    p.np = 12;
+    p.nrn = 3;
+    p.nrp = 5;
 else
     p.nn = gridsize(1);                                                                  %In negative electrode
     p.ns = gridsize(2);                                                                   %In separator
@@ -42,15 +45,17 @@ end
 %- Simulation parameters -------------------------------------------------%
 %-------------------------------------------------------------------------%
 p.dt = 1; 
-p.tol = 1e-2;                                                     %Tolerance for convergence                                                                     
+p.tol = 2e-3;                                                     %Tolerance for convergence                                                                     
 p.iter_max = 1e4;                                                          %Maximum iterations for the inner loop
 p.gamma = 1;                                                                %Damping coefficient for update of states
-p.verbose = 0;
+p.verbose = 1;
+p.Vmin = 2.7; p.Vmax = 4.2; 
 % Temperature defined to be constant for now. 
-p.T_amb = 288;
-p.itp_grid = 100; 
-p.output_interpolated_states = 0; 
+p.T_amb = 298.15;
+p.T_enable = 0; 
 
+p.fvm_method = 1; 
+p.set_simp = [2 2 2 2 1 0]; 
 %-------------------------------------------------------------------------%
 %- Material-specific parameters ------------------------------------------%
 %- Default parameters are taken from Xia et al. (2017). ------------------%
@@ -80,8 +85,10 @@ p.p_sep = 1.5;
 p.Ds_neg = 2e-16;                                                           %Solid-phase Li diffusion coefficient at the neg. electrode [m^2/s]
 p.Ds_pos = 3.7e-16;                                                         %Solid-phase Li diffusion coefficient at the pos. electrode [m^2/s]
 
-p.Rf_neg = 0;
-p.Rf_pos = 0;
+p.Rf0_neg = 0; 
+p.Rf0_pos = 0; 
+p.Rf_neg = p.Rf0_neg;
+p.Rf_pos = p.Rf0_pos;
 % Transport properties
 p.t_plus = 0.363;                                                            %Li+ transference number [-]
 
@@ -115,13 +122,17 @@ p.ce0 = 1200;
 
 p.Cap0 = (p.s100_pos-p.s0_pos)*p.epss_pos*p.delta_pos*p.A_surf*p.F*p.cs_max_pos;
 p.kappa = @(c,T) 15.8e-4*c.*exp(-0.85*(1e-3*c).^1.4); 
+p.dlnfdx = @(c,T) (0.601-0.24*(c/1000).^0.5+0.983.*(1-0.0052*(p.T-294))*(c/1000).^1.5)*(1-p.t_plus)^-1-1; 
+p.De = @(c,T) 0.134227429226746*10e-4*10.^(-4.43-54./(p.T-229-5*(c/1000))-0.22*(c/1000));
+p.Ds_pos = @(stoich,T) 55782.0157020892*10.^(-20.26+534.9*(stoich-0.5).^8+2.263*(stoich-0.5).^2); 
 
-p.kappa = p.kappa(p.ce0,p.T_amb); 
-p.dlnfdx = 0; 
-p.De = 2.6e-10;
-p.Ds_pos = 3.7e-16; 
-% Negative and positive electrode potentials and their derivatives with
-% respect to cs_bar
+%Thermal parameters
+p.U_T = 1.1e-3;
+Vcell = 164e-3*250e-3*5e-3; 
+rho_cell = 2208; 
+p.m = Vcell*rho_cell; 
+p.h_c = 0; 
+p.C_p = 1148.5; 
 
 p.U_neg = @(w) 8.00229 + 5.0647 * w - 12.578 * sqrt(w) - 8.6322e-4 ./ w...
         + 2.1765e-5 * ( w.^1.5 ) - 0.46016 * exp ( 15.0 * ( 0.06 - w ) )...

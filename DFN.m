@@ -23,12 +23,12 @@
 %    - out is a MATLAB struct containing all the output variables, such as 
 %      the output voltage, the concentrations and the potentials.
 %
-% This file is a part of the BattEry Simulation Toolbox (BEST)
+% This file is a part of the TOOlbox for BAttery SIMulation (TOBASIM)
 % Github: https://github.com/Zuan-Khalik/Battery-Simulation-Toolbox
 %
 % Author: Zuan Khalik (z.khalik@tue.nl)
 %
-% BEST is licensed under the BSD 3-Clause License
+% TOBASIM is licensed under the BSD 3-Clause License
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
@@ -47,20 +47,29 @@ end
 warning('off','MATLAB:nearlySingularMatrix');
 warning('off','MATLAB:illConditionedMatrix');
 
-p.T_enable = 0; 
-p.fvm_method = 1; 
-p.set_simp = [2 2 2 2 1 0]; 
 %% Define variables for simulation
 soc = init_cond;
 p = fcn_system_vectors(p);
 p = fcn_system_matrices(p);
 
 [cs_prevt, ce_prevt, phis_prev,T_prevt,soc_prevt] = init(p,init_cond);
+phis = zeros(p.nnp,time_max);
+phie = zeros(p.nx,time_max);
+if p.set_simp(6)
+    cs = zeros(p.np*2+p.nn*2,time_max);
+else
+    cs = zeros(p.np*p.nrp+p.nn*p.nrn,time_max);
+end
+ce = zeros(p.nx,time_max);
+jn = zeros(p.nnp,time_max);
+eta = zeros(p.nnp,time_max);
+U = zeros(p.nnp,time_max);
+V = zeros(1,time_max);
+T = zeros(1,time_max);
 %- prev indicates the condition of the state at k-1
 
 %Measure simulation time for benchmark purposes
-simulation_time = tic; 
-if p.verbose==0
+if p.verbose<2
     dispstat('Starting simulation...','keepthis','timestamp')
 end
 
@@ -68,7 +77,7 @@ warning_set = 0;
 t_vec = p.dt; 
 end_simulation = 0; 
 solution_time = 0;
-num_iter = 0;
+num_iter = 0; 
 %% Simulation
 for t=1:1e6
     t1=t*p.dt;
@@ -77,48 +86,34 @@ for t=1:1e6
     p = fcn_system_matrices2(p,cs_prevt,ce_prevt); 
     % Solve set of AEs using Newton's method at time t
     for k=1:p.iter_max
-        num_iter = num_iter+1;
         % Obtain function matrix and Jacobian
-        [F_phis, J_phis,U(:,t),jn(:,t),eta(:,t),p] = fcn_phis(phis_prev,ce_prevt,cs_prevt,T_prevt,i_app(t),p);
-        phis(:,t) = (phis_prev-p.gamma*(J_phis\F_phis));
-        % Track convergence (can be any norm)
-        conv_check = norm((phis(:,t)-phis_prev),2);
-
-        % Update iterated phis
-        phis_prev = phis(:,t);
-        if (p.set_simp(4)==1) 
-            cs(:,t) = p.Gamma_cs*i_app(t)+p.Phi_cs*phis(:,t)+p.Theta_cs; 
-        end
-        if (p.set_simp(2)==1)
-            ce(:,t) = p.Gamma_ce*i_app(t)+p.Phi_ce*phis(:,t)+p.Theta_ce; 
-        end
-        % If algorithm doesn't converge, then display a warning
+        cs(:,t) = p.Gamma_cs*i_app(t)+p.Phi_cs*phis_prev+p.Theta_cs; 
+        ce(:,t) = p.Gamma_ce*i_app(t)+p.Phi_ce*phis_prev+p.Theta_ce; 
+        phie(:,t) = p.Gamma_phie*i_app(t)+p.Phi_phie*phis_prev+p.Pi_phie*log(ce(:,t)); 
+        [F_phis,jn(:,t),i0,eta(:,t),U(:,t),p] = fcn_F(phis_prev,cs(:,t),ce(:,t),phie(:,t),ce_prevt,cs_prevt,T_prevt, i_app(t),p);
+        conv_check = norm(F_phis,2); 
+        num_iter = num_iter+1; 
+       % If algorithm doesn't converge, then display a warning
         if k==p.iter_max
             warning_set = 1;
             end_simulation = 1;
         end 
         % If criterium for convergence is met, then break loop
-        if(all(conv_check' <=p.tol)||end_simulation==1)
+        if(conv_check<p.tol ||end_simulation==1)
             if mod(t1,100)==0
-                sim_time = toc(simulation_time);
                 if p.verbose ==0
-                print_loop(t1,time_max,i_app(t),k,sim_time)
+                print_loop(t1,time_max,i_app(t),k,solution_time)
                 end
             end
             break
         end
-    end 
-    % Abort simulation if algorithm is not converged
-    % Update variables
-    if not(p.set_simp(4)==1) || not(isa(p.Ds_pos,'function_handle'))
-        cs(:,t) = p.Gamma_cs*i_app(t)+p.Phi_cs*phis(:,t)+p.Theta_cs; 
+        [J_phis,p] = fcn_J(cs(:,t),ce(:,t),jn(:,t),i0,eta(:,t), ce_prevt,T_prevt,p); 
+        phis_prev = phis_prev-(J_phis\F_phis); 
+        
     end
-    if not(p.set_simp(2)==1) || not(isa(p.De,'function_handle'))
-        ce(:,t) = p.Gamma_ce*i_app(t)+p.Phi_ce*phis(:,t)+p.Theta_ce; 
-    end
+    phis(:,t) = phis_prev; 
+
     solution_time = solution_time+toc();
-    phie(:,t) = p.Gamma_phie*i_app(t)+p.Phi_phie*phis(:,t)+p.Pi_phie*log(ce(:,t)); 
-    % Update ageing variables
     V(t) = phis(end,t)+i_app(t)/p.A_surf*p.dx(end)*0.5/p.sigma_eff(end)...
         -phis(1,t)-i_app(t)/p.A_surf*p.dx(1)*0.5/p.sigma_eff(1)...
         +(p.R_cc/p.A_surf)*i_app(t);
@@ -142,10 +137,8 @@ for t=1:1e6
     if(not(isequal(dt_prev,p.dt)))
         p = fcn_system_matrices(p);
     end
-    if not(isreal(J_phis)) || not(isreal(F_phis)) || isinf(rcond(J_phis)) || isnan(rcond(J_phis))
-        warning('Solution is complex')
+    if V(t) <p.Vmin || V(t) >p.Vmax
         end_simulation=1;
-        warning_set = 2;
     end
     if end_simulation==1
         break
@@ -158,11 +151,10 @@ for t=1:1e6
     T_prevt = T(t); 
     soc_prevt = soc(t); 
 end
-out.sim_time = toc(simulation_time);
-out.solution_time = solution_time;
-out.num_iter = num_iter;
+out.sim_time = solution_time;
+out.num_iter = num_iter; 
 if warning_set==0
-    if p.verbose==0
+    if p.verbose<2
     dispstat(sprintf('Finished the simulation in %2.2f s \n',out.sim_time),'keepthis','timestamp');
     end
 else
@@ -172,101 +164,41 @@ i_app = i_app(1:end-1);
 n_t = t; 
 p.L = p.delta_neg+p.delta_sep+p.delta_pos; 
 % Store states
-if not(p.output_interpolated_states)
 out.x = [p.dx_n/2*(1:2:(p.nn*2-1)) p.delta_neg+[p.dx_s/2*(1:2:(p.ns*2-1))]...
         p.delta_neg+p.delta_sep+p.dx_p/2*(1:2:(p.np*2-1))]/p.L; 
-out.phis = [phis(1:p.nn,:); NaN(p.ns,n_t); phis(p.nn+1:end,:)]'; 
-out.ce = ce'; 
-out.cs = cs';  
-out.phie = phie'; 
+out.phis = [phis(1:p.nn,1:n_t); NaN(p.ns,n_t); phis(p.nn+1:end,1:n_t)]'; 
+out.ce = ce(:,1:n_t)'; 
+out.cs = cs(:,1:n_t)';  
+out.phie = phie(:,1:n_t)'; 
 if p.set_simp(6)
-    out.cs_bar = [cs(p.nnp+(1:p.nn),:); NaN(p.ns,n_t); cs(p.nnp+(p.nn+1:p.nnp),:)]';
+    out.cs_bar = [cs(p.nnp+(1:p.nn),1:n_t); NaN(p.ns,n_t); cs(p.nnp+(p.nn+1:p.nnp),1:n_t)]';
 else
-    out.cs_bar = [cs(p.nrn:p.nrn:p.nrn*p.nn,:); NaN(p.ns,n_t); cs(p.nrn*p.nn+p.nrp:p.nrp:end,:)]';
+    out.cs_bar = [cs(p.nrn:p.nrn:p.nrn*p.nn,1:n_t); NaN(p.ns,n_t); cs(p.nrn*p.nn+p.nrp:p.nrp:end,1:n_t)]';
 end
 out.stoich = [out.cs_bar(:,1:p.nn)/p.cs_max_neg NaN(n_t,p.ns) out.cs_bar(:,p.nns+1:end)/p.cs_max_pos]; 
-out.jn = [jn(1:p.nn,:); NaN(p.ns,n_t); jn(p.nn+1:end,:)]';  
-out.U = [U(1:p.nn,:); NaN(p.ns,n_t); U(p.nn+1:end,:)]';  
-out.eta = [eta(1:p.nn,:); NaN(p.ns,n_t); eta(p.nn+1:end,:)]'; 
-out.V = V'; 
+out.jn = [jn(1:p.nn,1:n_t); NaN(p.ns,n_t); jn(p.nn+1:end,1:n_t)]';  
+out.U = [U(1:p.nn,1:n_t); NaN(p.ns,n_t); U(p.nn+1:end,1:n_t)]';  
+out.eta = [eta(1:p.nn,1:n_t); NaN(p.ns,n_t); eta(p.nn+1:end,1:n_t)]'; 
+out.V = V(1:n_t)'; 
 out.i_app = i_app';
-out.T = T'; 
+out.T = T(1:n_t)'; 
 out.p = p; 
 out.t = t_vec(1:end-1)'; 
 out.soc = soc';
-
-else
-% Store extrapolated states if required
-x_n = [0 p.dx_n/2*(1:2:(p.nn*2-1)) p.delta_neg]; 
-x_s = p.delta_neg+[p.dx_s/2*(1:2:(p.ns*2-1))]; 
-x_p = p.delta_neg+p.delta_sep+[0 p.dx_p/2*(1:2:(p.np*2-1)) p.delta_pos]; 
-x_s_ip = [x_n x_s x_p]'; 
-x_e_ip = [x_n(1:end-1) x_s x_p(2:end)]; 
-phis_neg = [phis(1,:)-i_app*p.dx(1)*0.5/p.sigma_eff(1); phis(1:p.nn,:); phis(p.nn,:)]; 
-phis_sep = NaN(p.ns,size(phis_neg,2)); 
-phis_pos = [phis(p.nn+1,:); phis(p.nn+1:end,:); phis(p.nnp,:)+i_app*p.dx(end)*0.5/p.sigma_eff(p.nnp)]; 
-phis_ip = [phis_neg; phis_sep; phis_pos]; 
-phie_ip = [phie(1,:); phie(1:p.nn,:);interp1(x_e_ip(p.nn+1:p.nn+2),phie(p.nn:p.nn+1,:),p.delta_neg); phie(p.nn+1:p.nns,:);...
-        interp1(x_e_ip(p.nns+1:p.nns+2),phie(p.nns:p.nns+1,:),p.delta_neg+p.delta_sep);phie(p.nns+1:end,:);phie(end,:)];
-ce_ip = [ce(1,:); ce(1:p.nn,:);interp1(x_e_ip(p.nn+1:p.nn+2),ce(p.nn:p.nn+1,:),p.delta_neg); ce(p.nn+1:p.nns,:);...
-        interp1(x_e_ip(p.nns+1:p.nns+2),ce(p.nns:p.nns+1,:),p.delta_neg+p.delta_sep);ce(p.nns+1:end,:);ce(end,:)];
-if p.set_simp(6)
-    cs_bar_neg = [NaN(1,t); cs(p.nnp+1:p.nnp+p.nn,:); NaN(1,t)]; 
-    cs_bar_sep = NaN(p.ns,t); 
-    cs_bar_pos = [NaN(1,t); cs(p.nnp+p.nn+1:end,2:t); NaN(1,t)]; 
-else
-    cs_bar_neg = [NaN(1,t); cs(p.nrn:p.nrn:p.nrn*p.nn,:); NaN(1,t)]; 
-    cs_bar_sep = NaN(p.ns,t); 
-    cs_bar_pos = [NaN(1,t); cs(p.nrn*p.nn+p.nrp:p.nrp:end,:); NaN(1,t)]; 
-end
-cs_bar_ip = [cs_bar_neg; cs_bar_sep; cs_bar_pos];
-stoich_ip = [cs_bar_neg/p.cs_max_neg; cs_bar_sep; cs_bar_pos/p.cs_max_pos]; 
-U_neg = [NaN(1,t); U(1:p.nn,1:t); NaN(1,t)]; 
-U_sep = NaN(p.ns,t); 
-U_pos = [NaN(1,t); U(p.nn+1:end,1:t); NaN(1,t)]; 
-U_ip = [U_neg; U_sep; U_pos]; 
-jn_neg = [NaN(1,t); jn(1:p.nn,1:t); NaN(1,t)]; 
-jn_sep = NaN(p.ns,t); 
-jn_pos = [NaN(1,t); jn(p.nn+1:end,1:t); NaN(1,t)]; 
-jn_ip = [jn_neg; jn_sep; jn_pos]; 
-eta_neg = [NaN(1,t); eta(1:p.nn,1:t); NaN(1,t)]; 
-eta_sep = NaN(p.ns,t); 
-eta_pos = [NaN(1,t); eta(p.nn+1:end,1:t); NaN(1,t)]; 
-eta_ip = [eta_neg; eta_sep; eta_pos]; 
-
-out.x = x_s_ip'/p.L; 
-out.phis = phis_ip'; 
-out.ce = ce_ip';
-out.cs = cs'; 
-out.phie = phie_ip'; 
-out.cs_bar = cs_bar_ip';
-out.stoich = stoich_ip'; 
-out.jn = jn_ip'; 
-out.U = U_ip'; 
-out.eta = eta_ip'; 
-out.V = V'; 
-out.i_app = i_app';
-out.T = T'; 
-out.p = p; 
-out.t = t_vec(1:end-1)'; 
-out.soc = soc';
-end
+out.Q = out.soc*p.Cap0/3600;
+out.Q = abs(out.Q-out.Q(1));
 end
 %% Functions
 %-------------------------------------------------------------------------%
 %-- Functions for the DFN model ------------------------------------------%
 %-------------------------------------------------------------------------%
-function [ F_phis, J_phis,U,jn,eta,p] = fcn_phis(phis, ce_prevt,cs_prevt,T, i_app,p)
+function [ F_phis,jn,i0,eta,U,p] = fcn_F(phis,cs,ce,phie, ce_prevt,cs_prevt,T, i_app,p)
 %-------------------------------------------------------------------------%
 %- Compute F_phis and J_phis ---------------------------------------------%
 %-------------------------------------------------------------------------% 
-%- For the sake of notation, cs_bar, ce_bar, phis, phie_bar are ----------%
-%- redefined to x1,x2,x3,x4, respectively, as well as their related ------%
-%- variables. ------------------------------------------------------------%
-cs = p.Gamma_cs_bar*i_app+p.Phi_cs_bar*phis+p.Theta_cs_bar; 
-ce = p.Gamma_ce*i_app+p.Phi_ce*phis+p.Theta_ce;
-phie = p.Gamma_phie_bar*i_app+p.Phi_phie_bar*phis+p.Pi_phie_bar*log(ce); 
-% phie = p.Gamma_phie_bar*i_app+p.Phi_phie_bar*phis+p.Pi_phie_bar*(ones(p.nx,1)-(1./ce_prevt).*ce+log(ce_prevt));  
+
+cs = p.Acs_bar*cs; 
+phie = p.Aphie_bar*phie; 
 
 if p.set_simp(2)==0
     p = De_matrices(ce,p.T_amb,p);
@@ -302,11 +234,34 @@ w = cs(1:p.nn)/p.cs_max_neg;
 z = cs(p.nn+1:end)/p.cs_max_pos; 
 U = [p.U_neg(w); p.U_pos(z)]; 
 eta = phis-phie-U-p.F*p.R_f.*jn;
+
+if p.set_simp(5)==1 
+    F_phis = p.F*jn./i0-(p.alpha_a+p.alpha_c)*p.F/(p.R*T)*eta;
+else
+    exp1 = exp(p.alpha_a*p.F*eta/(p.R*T)); 
+    exp2 = exp(-p.alpha_c*p.F*eta/(p.R*T)); 
+    F_phis = p.F*jn./i0-(exp1-exp2);
+end
+end
+
+function [J_phis,p] = fcn_J(cs,ce,jn,i0,eta, ce_prevt,T,p)
+%-------------------------------------------------------------------------%
+%- Compute F_phis and J_phis ---------------------------------------------%
+%-------------------------------------------------------------------------% 
+%- For the sake of notation, cs_bar, ce_bar, phis, phie_bar are ----------%
+%- redefined to x1,x2,x3,x4, respectively, as well as their related ------%
+%- variables. ------------------------------------------------------------%
+
+%- Exchange current density, Eq. (7) in Xia et al. (2017)
+
+ce1 = ce; 
+cs = p.Acs_bar*cs; 
+ce = p.Ace_bar*ce; 
 di0dcs = (-p.alpha_a./(p.cs_bar_max-cs)+p.alpha_c./cs).*i0; 
 di0dce = p.alpha_a./ce.*i0; 
 djndphis = -p.Bphis_inv*p.Aphis; 
 
-dphiedphis = p.Phi_phie_bar-p.Pi_phie_bar*diag(1./ce_prevt)*p.Phi_ce;  
+dphiedphis = p.Phi_phie_bar+p.Pi_phie_bar*diag(1./ce1)*p.Phi_ce;  
 
 dcsdphis = p.Phi_cs_bar; 
 dcedphis = p.Phi_ce_bar; 
@@ -319,15 +274,13 @@ dUdphis = dUdcs*dcsdphis;
 
 detadphis = eye(p.nnp)-dphiedphis-dUdphis-diag(p.F*p.R_f)*djndphis; 
 
-if p.set_simp(5)==1 %|| any(abs(eta)>0.2)
-    F_phis = jn./i0*p.R*T-eta; 
-    J_phis = p.R*T*diag(1./i0)*djndphis-p.R*T*diag(jn./i0.^2)*di0dphis-detadphis; 
+if p.set_simp(5)==1 
+    J_phis = p.F*diag(1./i0)*djndphis-p.F*diag(jn./i0.^2)*di0dphis-(p.alpha_a+p.alpha_c)*p.F/(p.R*T)*detadphis; 
 else
     exp1 = exp(p.alpha_a*p.F*eta/(p.R*T)); 
     exp2 = exp(-p.alpha_c*p.F*eta/(p.R*T)); 
     dexp1dphis = diag(p.alpha_a*p.F/(p.R*T)*exp1)*detadphis; 
     dexp2dphis = -diag(p.alpha_c*p.F/(p.R*T)*exp2)*detadphis; 
-    F_phis = p.F*jn./i0-(exp1-exp2);
     J_phis = p.F*diag(1./i0)*djndphis-p.F*diag(jn./i0.^2)*di0dphis-(dexp1dphis-dexp2dphis); 
 end
 end
@@ -350,10 +303,8 @@ cs0_pos = p.s0_pos*p.cs_max_pos;
 cs100_pos = p.s100_pos*p.cs_max_pos;
 
 if init_cond >2
-    x = linspace(0,1,10000)'; 
-    U_pos = p.U_pos((p.s100_pos-p.s0_pos)*x+p.s0_pos);
-    U_neg = p.U_neg((p.s100_neg-p.s0_neg)*x+p.s0_neg);
-    EMF = reshape(U_pos,[1 length(U_pos)])-reshape(U_neg, [1 length(U_neg)]);
+    x = linspace(0,1,10000); 
+    EMF = p.U_pos((p.s100_pos-p.s0_pos)*x+p.s0_pos)-p.U_neg((p.s100_neg-p.s0_neg)*x+p.s0_neg); 
     soc_init = interp1(EMF,x,init_cond,'linear','extrap'); 
     if soc_init <0 || soc_init>1
         warning('Initial SOC not in the range of [0,1]')

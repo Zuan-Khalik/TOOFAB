@@ -2,12 +2,12 @@
 %
 % Example script on how to use the BEST toolbox
 %
-% This file is a part of the BattEry Simulation Toolbox (BEST)
+% This file is a part of the TOOlbox for BAttery SIMulation (TOBASIM)
 % Github: https://github.com/Zuan-Khalik/Battery-Simulation-Toolbox
 %
 % Author: Zuan Khalik (z.khalik@tue.nl)
 %
-% BEST is licensed under the BSD 3-Clause License
+% TOBASIM is licensed under the BSD 3-Clause License
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 clear all; close all 
@@ -18,7 +18,7 @@ load i_app_WLTP.mat
 
 %Select which parameter set to simulate with. Choice between 'HP' (High
 %Power) or 'HE' (High Energy)
-parameter_set = 'HP'; 
+parameter_set = 'HE'; 
 
 %Define initial state-of-charge (SOC)
 soc_init = 0.8; 
@@ -26,8 +26,8 @@ soc_init = 0.8;
 t = 1:3600; 
 
 if strcmp(parameter_set,'HE')
-    Cap = 12.7; 
-    p = parameters_JN(); %get parameter struct
+    Cap = 29.5; 
+    p = parameters_LS(); %get parameter struct
 else
     Cap = 6; 
     p = parameters_KS(); %get parameter struct
@@ -44,4 +44,7 @@ out= DFN(input_current,3600,soc_init,p);
 eval_time = 1800; 
 
 % Plot the output and some internal state variables
-make_plots(out,eval_time,'k','k',1,0)
+make_plots({out},eval_time,1,1,0)
+set(gcf, 'Position',  [20, 20, 800, 950])
+set(findall(gcf,'-property','FontSize'),'FontSize',18)
+lgd.FontSize = 16; 
