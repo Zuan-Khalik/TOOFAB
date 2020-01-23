@@ -8,12 +8,11 @@ The toolbox is currently in its initial stages, so some planned features are not
 
 ### Current features
 The implementation has the following currently (tested) features:
-- Simulation of the Simplified DFN (SDFN) model as presented in [1]. 
+- Fast simulation of the full DFN model (without simplifications), including concentration-dependent parameters
+- The ability to apply several simplifications to allow for a trade-off between accuracy and computation time. 
 
 ### Coming features
 TOOBASIM will be continuously upgraded, and the current planned features are as follows: 
-- Fast simulation of the full DFN model (without simplifications), including concentration-dependent parameters
-- The ability to apply several simplifications to allow for a trade-off between accuracy and computation time. 
 - Thermal dynamics through a lumped thermal model. 
 - Battery ageing model 
 - Improved exception handling 
