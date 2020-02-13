@@ -2,8 +2,8 @@
 %
 % Example script on how to use the BEST toolbox
 %
-% This file is a part of the TOOlbox for BAttery SIMulation (TOBASIM)
-% Github: https://github.com/Zuan-Khalik/Battery-Simulation-Toolbox
+% This file is a part of the TOOlbox for BAttery SIMulation (TOOFAB)
+% Github: https://github.com/Zuan-Khalik/TOOFAB
 %
 % Author: Zuan Khalik (z.khalik@tue.nl)
 %

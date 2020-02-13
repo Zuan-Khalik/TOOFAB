@@ -3,7 +3,8 @@
 % Parameters of the model presented in [2] with some changes presented in
 % [1]
 %
-% This file is a part of the TOOlbox for BAttery SIMulation (TOBASIM)
+% This file is a part of the TOOlbox for BAttery SIMulation (TOOFAB)
+% Github: https://github.com/Zuan-Khalik/TOOFAB
 %
 % Github: https://github.com/Zuan-Khalik/Battery-Simulation-Toolbox
 %
