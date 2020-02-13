@@ -1,4 +1,4 @@
-# TOOlbox for BAttery SIMulation (TOOBASIM)
+# TOOFAB(ulous) (Toolbox for FAst Battery simulation)
 Version 0.1.0 (issued 13-12-2019)
 
 A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for analysis and control. 
@@ -12,20 +12,20 @@ The implementation has the following currently (tested) features:
 - The ability to apply several simplifications to allow for a trade-off between accuracy and computation time. 
 
 ### Coming features
-TOOBASIM will be continuously upgraded, and the current planned features are as follows: 
+TOOFAB will be continuously upgraded, and the current planned features are as follows: 
 - Thermal dynamics through a lumped thermal model. 
 - Battery ageing model 
 - Improved exception handling 
 
 ## Getting Started
-These instructions will set you up to use the TOOlbox for BAttery SIMulation (TOOBASIM).
+These instructions will set you up to use TOOFAB.
 
 ### Prerequisites 
 This toolbox only requires a working version of MATLAB. 
 The toolbox has been tested with MATLAB R2019b, but should work with any MATLAB version equal to or newer than MATLAB R2016b. This compatibility requirement comes from the feature that allows local functions, added to MATLAB since version R2016b. A legacy version compatible with older MATLAB versions is planned to be added in the future, or upon request. 
 
 ### Using the toolbox
-TOOBASIM can be interfaced with the DFN function defined as
+TOOFAB can be interfaced with the DFN function defined as
 
 out = DFN(input_current,tf,init_cond,param)
 
