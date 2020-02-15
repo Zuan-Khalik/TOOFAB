@@ -2,7 +2,7 @@
 %
 % Plotting function
 %
-% This file is a part of the TOOlbox for BAttery SIMulation (TOOFAB)
+% This file is a part of the TOOlbox for FAst Battery simulation (TOOFAB)
 % Github: https://github.com/Zuan-Khalik/TOOFAB
 %
 % Author: Zuan Khalik (z.khalik@tue.nl)
