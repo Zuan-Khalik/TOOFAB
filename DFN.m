@@ -23,7 +23,7 @@
 %    - out is a MATLAB struct containing all the output variables, such as 
 %      the output voltage, the concentrations and the potentials.
 %
-% This file is a part of the TOOlbox for BAttery SIMulation (TOOFAB)
+% This file is a part of the TOOlbox for FAst Battery simulation (TOOFAB)
 % Github: https://github.com/Zuan-Khalik/TOOFAB
 %
 % Author: Zuan Khalik (z.khalik@tue.nl)
