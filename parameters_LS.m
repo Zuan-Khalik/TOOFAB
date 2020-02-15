@@ -3,7 +3,7 @@
 % Parameters of the model presented in [2] with some changes presented in
 % [1]
 %
-% This file is a part of the TOOlbox for BAttery SIMulation (TOOFAB)
+% This file is a part of the TOOlbox for FAst Battery simulation (TOOFAB)
 % Github: https://github.com/Zuan-Khalik/TOOFAB
 %
 % Author: Zuan Khalik (z.khalik@tue.nl)
