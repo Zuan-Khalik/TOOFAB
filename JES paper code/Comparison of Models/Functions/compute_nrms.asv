@@ -1,0 +1,74 @@
+function NRMSE = compute_nrms(out1,out2)
+nt = length(out1.V); 
+nx = out1.p.nx; 
+nn = out1.p.nn; 
+ns = out1.p.ns;
+np = out1.p.np; 
+nnp = out1.p.nnp; 
+nns = out1.p.nns;
+
+RMSE.V = NRMSE(out1.V,out2.V); 
+
+phie1 = resphase(out1.phie, [1 nx*nt]); 
+phie2 = reshape(out2.phie, [1 nx*nt]); 
+RMSE.phie = NRMSE(phie1,phie2); 
+
+ce1 = resphase(out1.ce, [1 nx*nt]); 
+ce2 = reshape(out2.ce, [1 nx*nt]); 
+RMSE.ce = NRMSE(ce1,ce2);
+
+cs_bar1 = reshape([out1.cs_bar(:,1:p.nn) out1.cs_bar(:,p.nnp+1:end)], [1 nx*nt]);  
+cs_bar2 = reshape([out2.cs_bar(:,1:p.nn) out2.cs_bar(:,p.nnp+1:end)], [1 nx*nt]);  
+RMSE.c
+
+cs_bar1_neg(isnan(cs_bar1_neg)) = []; 
+cs_bar1_pos = out1.cs_bar(44:end,:);
+cs_bar1_pos(isnan(cs_bar1_pos)) = []; 
+cs_bar2_neg = out2.cs_bar(1:43,:);
+cs_bar2_neg(isnan(cs_bar2_neg)) = []; 
+cs_bar2_pos = out2.cs_bar(44:end,:);
+cs_bar2_pos(isnan(cs_bar2_pos)) = []; 
+cs_bar1 = [cs_bar1_neg/(max(cs_bar1_neg)-min(cs_bar1_neg)) cs_bar1_pos/(max(cs_bar1_pos)-min(cs_bar1_pos))]; 
+cs_bar2 = [cs_bar2_neg/(max(cs_bar2_neg)-min(cs_bar2_neg)) cs_bar2_pos/(max(cs_bar2_pos)-min(cs_bar2_pos))]; 
+
+time = 4000; 
+RMSE_V = rms(out1.V-out2.V)/(max(out1.V)-min(out1.V)); 
+phie1 = reshape(out1.phie,[1 100*time]); 
+phie2 = reshape(out2.phie,[1 100*time]); 
+RMSE_phie = rms(phie2-phie1)/(max(phie2)-min(phie2)); 
+ce1 = reshape(out1.ce,[1 100*time]); 
+ce2 = reshape(out2.ce,[1 100*time]); 
+RMSE_ce = rms(ce2-ce1)/(max(ce2)-min(ce2)); 
+cs_bar1_neg = out1.cs_bar(1:43,:);
+cs_bar1_neg(isnan(cs_bar1_neg)) = []; 
+cs_bar1_pos = out1.cs_bar(44:end,:);
+cs_bar1_pos(isnan(cs_bar1_pos)) = []; 
+cs_bar2_neg = out2.cs_bar(1:43,:);
+cs_bar2_neg(isnan(cs_bar2_neg)) = []; 
+cs_bar2_pos = out2.cs_bar(44:end,:);
+cs_bar2_pos(isnan(cs_bar2_pos)) = []; 
+cs_bar1 = [cs_bar1_neg/(max(cs_bar1_neg)-min(cs_bar1_neg)) cs_bar1_pos/(max(cs_bar1_pos)-min(cs_bar1_pos))]; 
+cs_bar2 = [cs_bar2_neg/(max(cs_bar2_neg)-min(cs_bar2_neg)) cs_bar2_pos/(max(cs_bar2_pos)-min(cs_bar2_pos))]; 
+
+jn1_neg = out1.jn(1:43,:);
+jn1_neg(isnan(jn1_neg)) = []; 
+jn1_pos = out1.jn(44:end,:);
+jn1_pos(isnan(jn1_pos)) = []; 
+jn2_neg = out2.jn(1:43,:);
+jn2_neg(isnan(jn2_neg)) = []; 
+jn2_pos = out2.jn(44:end,:);
+jn2_pos(isnan(jn2_pos)) = []; 
+jn1 = [jn1_neg/(max(jn1_neg)-min(jn1_neg)) jn1_pos/(max(jn1_pos)-min(jn1_pos))]; 
+jn2 = [jn2_neg/(max(jn2_neg)-min(jn2_neg)) jn2_pos/(max(jn2_pos)-min(jn2_pos))]; 
+
+RMSE_stoich = rms(out1.stoich-out2.stoich)/mean(abs(out2.stoich)); 
+RMSE_cs_bar = rms(cs_bar1-cs_bar2); 
+RMSE_jn = rms(jn1-jn2); 
+% RMSE_jn = rms(out1.jn-out2.jn)/(max(out1.jn)-min(out1.jn)); 
+RMSE = [RMSE_V; RMSE_phie; RMSE_ce ;RMSE_cs_bar; RMSE_jn]; 
+end
+
+function NRMSE = NRMSE(x,y)
+N = length(x); 
+NRMSE = sqrt(1/N*sum((x-y).^2))/(max(0.5*(x+y))-min(0.5*(x+y))); 
+end
