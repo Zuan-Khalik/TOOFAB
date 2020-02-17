@@ -10,10 +10,10 @@ The toolbox is currently in its initial stages, so some planned features are not
 The implementation has the following currently (tested) features:
 - Fast simulation of the full DFN model (without simplifications), including concentration-dependent parameters
 - The ability to apply several simplifications to allow for a trade-off between accuracy and computation time. 
+- Thermal dynamics through a lumped thermal model. 
 
 ### Coming features
 TOOFAB will be continuously upgraded, and the current planned features are as follows: 
-- Thermal dynamics through a lumped thermal model. 
 - Battery ageing model 
 - Improved exception handling 
 
