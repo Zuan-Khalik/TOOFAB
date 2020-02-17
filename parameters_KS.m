@@ -50,7 +50,7 @@ p.tol = 2e-3;                                                     %Tolerance for
 p.iter_max = 1e4;                                                          %Maximum iterations for the inner loop
 p.gamma = 1;                                                                %Damping coefficient for update of states
 p.verbose = 1;
-p.Vmin = 2.7; p.Vmax = 4.2; 
+p.Vmin = 2; p.Vmax = 4.5; 
 % Temperature defined to be constant for now. 
 p.T_amb = 298.15;
 p.T_enable = 0; 
@@ -123,8 +123,8 @@ p.ce0 = 1200;
 
 p.Cap0 = (p.s100_pos-p.s0_pos)*p.epss_pos*p.delta_pos*p.A_surf*p.F*p.cs_max_pos;
 p.kappa = @(c,T) 15.8e-4*c.*exp(-0.85*(1e-3*c).^1.4); 
-p.dlnfdx = @(c,T) (0.601-0.24*(c/1000).^0.5+0.983.*(1-0.0052*(p.T-294))*(c/1000).^1.5)*(1-p.t_plus)^-1-1; 
-p.De = @(c,T) 0.134227429226746*10e-4*10.^(-4.43-54./(p.T-229-5*(c/1000))-0.22*(c/1000));
+p.dlnfdx = @(c,T) (0.601-0.24*(c/1000).^0.5+0.983.*(1-0.0052*(T-294))*(c/1000).^1.5)*(1-p.t_plus)^-1-1; 
+p.De = @(c,T) 0.134227429226746*10e-4*10.^(-4.43-54./(T-229-5*(c/1000))-0.22*(c/1000));
 p.Ds_pos = @(stoich,T) 55782.0157020892*10.^(-20.26+534.9*(stoich-0.5).^8+2.263*(stoich-0.5).^2); 
 
 %Thermal parameters
@@ -132,7 +132,7 @@ p.U_T = 1.1e-3;
 Vcell = 164e-3*250e-3*5e-3; 
 rho_cell = 2208; 
 p.m = Vcell*rho_cell; 
-p.h_c = 0; 
+p.h_c = 1e-3; 
 p.C_p = 1148.5; 
 
 p.U_neg = @(w) 8.00229 + 5.0647 * w - 12.578 * sqrt(w) - 8.6322e-4 ./ w...

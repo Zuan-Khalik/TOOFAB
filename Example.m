@@ -2,7 +2,7 @@
 %
 % Example script on how to use the BEST toolbox
 %
-% This file is a part of the TOOlbox for BAttery SIMulation (TOOFAB)
+% This file is a part of the TOOlbox for FAst Battery simulation (TOOFAB)
 % Github: https://github.com/Zuan-Khalik/TOOFAB
 %
 % Author: Zuan Khalik (z.khalik@tue.nl)
@@ -21,7 +21,7 @@ load i_app_WLTP.mat
 parameter_set = 'HE'; 
 
 %Define initial state-of-charge (SOC)
-soc_init = 0.8; 
+soc_init = 0.95; 
 % Define time vector
 t = 1:3600; 
 
@@ -34,11 +34,9 @@ else
 end
 
 % Define input_current in the required format
-input_current = [t' (12.7/Cap)*i_app']; 
-
+input_current = [t' 6*(Cap/12.7)*i_app']; 
 %% Simulate model
 out= DFN(input_current,3600,soc_init,p);
-
 %% Plot results
 % Choose at which time step to show internal state variables
 eval_time = 1800; 
