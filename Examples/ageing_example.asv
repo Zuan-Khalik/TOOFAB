@@ -12,38 +12,79 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 addpath('Functions')
-
 clear all; close all; 
 
 %Apply Simplification [S1] and [S2-II]-all
 p.set_simp = [2 2 2 2 1 0];
 
+%Enable ageing dynamics
+p.ageing = 1;
+
+%Disable verbosity 
+p.verbose = 0;
+
 %Choose C-rate for charging and discharging
 p.Crate_charge = 0.5; 
-p.Crate_discharge = 1;
+p.Crate_discharge = 0.2;
 
-%Choose step sizes for the various phases in the cycle. Note that the
-%parameter values have no significant meaning, and is only meant to show
-%how the additional dt output of the input_current function can be used
-p.dt_charge = 4;
-p.dt_discharge = 4;
-p.dt_CV = 3;
+%Choose step sizes for the various phases in the cycle. These step sizes
+%have been selected such that a small discretization error is incurred 
+p.dt_discharge = 10;
+p.dt_charge = 5;
+p.dt_CV = 2;
 
-%Run simulation 
-out = DFN(@cycle,2e5,0,p); 
+%Initialize loop variables
+i = 1;
+SoH = 1; %state of health
+while SoH(i)>0.8 %terminate when state of health is at 80% 
+        %At the first cycle, the initial conditions are static 
+        %corresponding to SoC = 1
+        if i==1 
+            out = DFN(@CC_CV,2e5,1,p); 
+            Cbat_fresh = out.param.Cbat;
+        %At the remaining cycles we would like to use the states of at the 
+        %end of the previous simulation as the initial condition for this simulation    
+        else 
+            %%
+            out = DFN(@CC_CV,2e5,states_init,p); 
+        end
+        % Save variables
+        SoH(i+1) = out.ageing.Cbat_aged/out.param.Cbat; %compute state-of-health
+        ageing.Rf{i} = out.ageing.Rf; %SEI film resistance
+        ageing.ct(i) = (out.t(out.mem.charge_end)-out.t(out.mem.discharge_end))/60; %charging time 
+        ageing.Cbat(i) = out.ageing.Cbat_aged; %Capacity of the aged battery
+        ageing.Closs(i) = out.ageing.Closs(end); %Charge lost due to side reactions
+        ageing.V{i} = out.V; %Terminal voltage
+        ageing.soc{i} = out.soc; %State-of-charge
+        ageing.t{i} = out.t; %time vector
+        
+        %Display information in command window
+        fprintf('Cycle %d, SoH: %f\n',i,SoH(i+1)*100)
+        
+        %Update variables for next simulation. The states at the end of the
+        %previous simulation are stored in out.states_end, which can be
+        %used as the initial condition for the next simulation.
+        states_init = out.states_end;
+        i = i+1; 
+end
+%% Plot
+figure()
+subplot(3,1,1)
+plot(0:i-1,SoH,'LineWidth',2)
+grid on
+xlabel('Cycle number [-]')
+ylabel('State-of-Health [-]')
 
-%% Plot results
-% Choose at which time step to show internal state variables
-eval_time = 1800; 
-
-% Plot the output and some internal state variables
-make_plots({out},eval_time,1,1,0)
-set(gcf, 'Position',  [20, 20, 800, 950])
-set(findall(gcf,'-property','FontSize'),'FontSize',18)
-lgd.FontSize = 16; 
+subplot(3,1,1)
+plot(0:i-1,ageing,'LineWidth',2)
+grid on
+xlabel('Cycle number [-]')
+ylabel('State-of-Health [-]')
 
 
-function [i_app_next,mem,end_simulation,dt] = cycle(k,t,i_app,V,soc,cs,ce,phis,phie,mem,p)
+
+
+function [i_app_next,mem,end_simulation,dt] = CC_CV(k,t,i_app,V,soc,cs,ce,phis,phie,mem,p)
 Cbat = 1*p.Cbat/3600; %Capacity of the battery
 V_max =p.OCV_max;   %Voltage at which the battery switches to CV mode
 V_min =p.OCV_min;   %Voltage after which the battery stops discharging
@@ -59,12 +100,16 @@ if k==1
     mem.status = 0;
     mem.e = 0;
     mem.e2 = 0;
+    mem.end_charge = 0;
+    mem.discharge_end = 1e6;
+    mem.charge_end = 1e6; 
 end
 
 % Condition to terminate the initial CC discharge stage and start the CC
 % charge stage
 if V(k)<=V_min && mem.status==0
     mem.status = 1;  
+    mem.discharge_end = k;
 end
 
 % Condition to terminate the CC charge stage and start the CV stage
@@ -74,7 +119,8 @@ end
 
 %Condition to terminate the simulation
 if i_app(k)<i_min && mem.status==2
-    end_simulation=1; 
+    mem.charge_end = k; 
+    end_simulation=1;
 end
 
 %Switch between the different stages

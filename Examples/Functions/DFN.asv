@@ -593,6 +593,7 @@ gamma_pos = mean(p.epss_pos)*p.delta_pos*p.cs_max_pos*p.A_surf*p.F;
 Q0 = p.s100_neg_fresh*gamma_neg+p.s100_pos_fresh*gamma_pos; 
 k = 1; 
 
+tic()
 if Closs<=1000 || indicator
     n_parts = 1;
 else
@@ -624,6 +625,7 @@ end
 end
 stoich_Q = x; 
 Q = (stoich_Q(1)-stoich_Q(3))*p.epss_neg*p.delta_neg*p.A_surf*p.cs_max_neg*p.F; 
+toc()
 end
 
 function [ m ] = fcn_system_matrices( p,m )
@@ -920,7 +922,7 @@ if p.ageing
     else
         Cl_prevt = p.Closs_init; 
     end
-    [p.Cbat,sbat] = fcn_Q(Cl_prevt,se_init,0,p);
+    [p.Cbat,sbat] = fcn_Q(Cl_prevt,se_init,p);
     p.s0_neg = sbat(3); p.s100_neg = sbat(1);
     p.s0_pos = sbat(4); p.s100_pos = sbat(2);
     p.i02f = p.i02; 
