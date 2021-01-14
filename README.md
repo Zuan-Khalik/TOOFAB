@@ -4,7 +4,6 @@ Version 1.0.0 (issued 14-01-2021)
 A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for analysis and control. 
 
 ## Features
-The toolbox is currently in its initial stages, so some planned features are not yet available. It is also possible to request features, if desired. In that case, please contact the author (z.khalik@tue.nl). 
 
 ### Current features
 - Accurate and computationally efficient simulation of the DFN model describing the internal electrochemical processes of a battery. 
@@ -15,7 +14,7 @@ The toolbox is currently in its initial stages, so some planned features are not
 - Ability to use efficiently use the model in a closed-loop setting. 
 
 ### Coming features
-No features are currently being planned. However, any desired features can still be requested. 
+No features are currently being planned. However, any desired features can still be requested. In that case, please contact the author (z.khalik@tue.nl).
 
 ## Getting Started
 These instructions will set you up to use TOOFAB.
