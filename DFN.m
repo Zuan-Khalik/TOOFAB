@@ -140,8 +140,8 @@ while not(end_simulation)
     dt_prev = p.dt;
     if input_mode==2
         if nargout(input_current) == 4
-            [i_app(t+1),mem,end_simulation,dt] = input_current(t,t_vec(t),i_app,V,soc,cs,ce,phis,phie,mem,p); 
-            p.dt = dt;
+            [i_app(t+1),mem,end_simulation,dt_or] = input_current(t,t_vec(t),i_app,V,soc,cs,ce,phis,phie,mem,p); 
+            p.dt = dt_or;
         elseif nargout(input_current)==3
             [i_app(t+1),mem,end_simulation] = input_current(t,t_vec(t),i_app,V,soc,cs,ce,phis,phie,mem,p);
         else
@@ -215,9 +215,10 @@ while not(end_simulation)
     end
     
     if mod(t,1000)==0 && p.ageing==1
-        [Cbat_new,sbat] = fcn_Q(Cl(t+1),se_init,p); 
+        [Cbat_new,sbat] = fcn_Q(Cl(t+1),se_init,1,p); 
         p.s0_neg = sbat(3); p.s100_neg = sbat(1);
         p.s0_pos = sbat(4); p.s100_pos = sbat(2);
+        se_init = sbat;
         Qs = soc_prevt*p.Cbat-(Cl(t+1)-Cl(t+1-1000));
         p.Cbat = Cbat_new;
         soc_prevt = Qs/p.Cbat; 
@@ -235,12 +236,12 @@ while not(end_simulation)
         T(t+1) = p.T_amb; 
     end
     solution_time = solution_time+toc();
-    if (any(stoich>1) || any(stoich<0)) && not(max_iterations)
+    if (any(stoich>=1-1e-6) || any(stoich<=1e-6)) && not(max_iterations)
         end_simulation =1;
         warning('cs exceeeding either cs_max or is lower than 0. Stopping the simulation.')
         warning_set = 1;
     end
-    if any(ce(:,t+1)<0) && not(max_iterations)
+    if any(ce(:,t+1)<=1e-6) && not(max_iterations)
         end_simulation =1;
         warning_set = 1;
         warning('ce is lower than 0. Stopping the simulation.')
@@ -288,7 +289,7 @@ else
 %     dispstat(sprintf('Finished the simulation in %2.2f s with warning %d \n',out.sim_time,warning_set),'keepthis','timestamp');
 end
 if warning_set ==1
-    n_t = t;
+    n_t = t+1;
 else
     n_t = t+1; 
 end
@@ -318,7 +319,7 @@ out.param = par_or;
 out.mem = mem;
 
 if p.ageing
-    [out.ageing.Cbat_aged,sbat] = fcn_Q(Cl(n_t),se_init,p); 
+    [out.ageing.Cbat_aged,sbat] = fcn_Q(Cl(n_t),se_init,1,p); 
     out.ageing.s0_neg_aged = sbat(3); 
     out.ageing.s100_neg_aged = sbat(1);
     out.ageing.s0_pos_aged = sbat(4);
@@ -479,7 +480,7 @@ di0dphis = diag(di0dcs)*dcsdphis+diag(di0dce)*dcedphis;
 w = cs_bar(1:p.nn)/p.cs_max_neg; 
 z = cs_bar(p.nn+1:end)/p.cs_max_pos;
 
-if not(isreal(w(1)))
+if not(isreal(w(1))) || isnan(w(1))
     w = 0.5*ones(p.nn,1); 
     z = 0.5*ones(p.nn,1); 
 end
@@ -585,12 +586,24 @@ else
 end
 end
 
-function [Q, stoich_Q] = fcn_Q(Closs,stoich_Q_prev,p)
+function [Q, stoich_Q] = fcn_Q(Closs,stoich_Q_prev,indicator,p)
 x_prev = stoich_Q_prev; 
 gamma_neg = mean(p.epss_neg)*p.delta_neg*p.cs_max_neg*p.A_surf*p.F; 
 gamma_pos = mean(p.epss_pos)*p.delta_pos*p.cs_max_pos*p.A_surf*p.F;
 Q0 = p.s100_neg_fresh*gamma_neg+p.s100_pos_fresh*gamma_pos; 
 k = 1; 
+
+if Closs<=1000 || indicator
+    n_parts = 1;
+else
+    n_parts = ceil(Closs/1000);
+end
+Closs_orig = Closs; 
+for i = 1:n_parts
+    Closs = 1000*i; 
+    if i==n_parts
+        Closs = Closs_orig;
+    end
 while(1)
     F = [x_prev(1)*gamma_neg+x_prev(2)*gamma_pos-(Q0-Closs);...
         p.U_pos(x_prev(2))-p.U_neg(x_prev(1))-p.OCV_max;...
@@ -608,9 +621,9 @@ while(1)
         break
     end
 end
+end
 stoich_Q = x; 
 Q = (stoich_Q(1)-stoich_Q(3))*p.epss_neg*p.delta_neg*p.A_surf*p.cs_max_neg*p.F; 
-
 end
 
 function [ m ] = fcn_system_matrices( p,m )
@@ -907,7 +920,7 @@ if p.ageing
     else
         Cl_prevt = p.Closs_init; 
     end
-    [p.Cbat,sbat] = fcn_Q(Cl_prevt,se_init,p);
+    [p.Cbat,sbat] = fcn_Q(Cl_prevt,se_init,0,p);
     p.s0_neg = sbat(3); p.s100_neg = sbat(1);
     p.s0_pos = sbat(4); p.s100_pos = sbat(2);
     p.i02f = p.i02; 
