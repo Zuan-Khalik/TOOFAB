@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V1.0.1
+% V1.0.2
 %
 % Simulation of the DFN model
 % 
@@ -345,14 +345,13 @@ end
 %-- Functions for the DFN model ------------------------------------------%
 %-------------------------------------------------------------------------%
 function soc = compute_soc(cs,p)
-ri = 1:p.nn; 
+ri = 1:p.nrn; 
 
 if p.set_simp(6)==1
     cs_avg_r = cs(1:p.nn); 
 else
-    for k = 1:p.nn
-        cs_avg_r(k,:) = mean(cs(k:p.nn:p.nn*p.nrn),1); 
-    end
+    A_mean = (1/p.nn)*kron(ones(1,p.nn),eye(p.nrn)); 
+    cs_avg_r = A_mean*cs(1:p.nn*p.nrn); 
 end
 cs_f = @(r)interp1([((ri-1)*p.dr_n)],cs_avg_r,r,'linear','extrap'); 
 
