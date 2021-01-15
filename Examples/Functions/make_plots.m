@@ -7,7 +7,7 @@
 %
 % Author: Zuan Khalik (z.khalik@tue.nl)
 %
-% TOBASIM is licensed under the BSD 3-Clause License
+% TOOFAB is licensed under the BSD 3-Clause License
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 function make_plots(out,eval_time,fig_handle,set_scaleheight,param_set)

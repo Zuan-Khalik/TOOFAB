@@ -8,7 +8,7 @@
 %
 % Author: Zuan Khalik (z.khalik@tue.nl)
 %
-% TOBASIM is licensed under the BSD 3-Clause License
+% TOOFAB is licensed under the BSD 3-Clause License
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 addpath('Functions')
