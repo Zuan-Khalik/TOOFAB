@@ -1,7 +1,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Example showing how the toolbox can be used to control the battery in
-% closed-loop, where the battery is simulated with a discharge-charge cycle
+% Example showing how the toolbox can be used for ageing simulations.
+%
+% Instead of simulating all cycles in one continuous simulation, the
+% simulations are done cycle-by-cycle. Note that although there is in
+% principle no limit to the amount of time that the model is simulated for,
+% it is recommended to split up the simulation into smaller parts (as done
+% here) in order to avoid memory issues.
 %
 % This file is a part of the TOOlbox for FAst Battery simulation (TOOFAB)
 % Github: https://github.com/Zuan-Khalik/TOOFAB
