@@ -11,7 +11,7 @@ A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for 
 - Ability to easily configure the toolbox for a desired trade-off between accuracy and computational efficiency through selection of model simplifications and adjusting the coarseness of the discretization grid. 
 - Option to use a battery ageing model describing the side reactions that lead to Li-ion loss due to the build-up SEI (solid-electrolyte interphase) layer.
 - Option to use a lumped thermal model describing the thermal dynamics.  
-- Ability to use efficiently use the model in a closed-loop setting. 
+- Ability to efficiently use the model in a closed-loop setting. 
 
 ### Coming features
 No features are currently being planned. However, any desired features can still be requested. In that case, please contact the author (z.khalik@tue.nl).
