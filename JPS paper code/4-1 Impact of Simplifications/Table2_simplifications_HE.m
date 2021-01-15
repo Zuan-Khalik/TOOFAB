@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Model Simplifications and Its Impact on Computational Complexity for an 
+% Model Simplifications and Their Impact on Computational Complexity for an 
 % Electrochemistry-Based Battery Modeling Toolbox
 %
 % Authors: Z. Khalik, M.C.F. Donkers, H.J. Bergveld

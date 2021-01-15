@@ -4,7 +4,7 @@
 % Fig. 3 in [1] for various selected models as presented in [1] for the 
 % high-energy (HE) cell [2]. Results shown in Fig. 8 in [1]. 
 %
-% Model Simplifications and Its Impact on Computational Complexity for an 
+% Model Simplifications and Their Impact on Computational Complexity for an 
 % Electrochemistry-Based Battery Modeling Toolbox
 %
 % Authors: Z. Khalik, M.C.F. Donkers, H.J. Bergveld
@@ -12,9 +12,9 @@
 % This file is licensed under the BSD 3-Clause License
 %
 % References
-% [1] Khalik et al., Model Simplifications and Its Impact on Computational 
+% [1] Khalik et al., Model Simplifications and Their Impact on Computational 
 % Complexity for an Electrochemistry-Based Battery Modeling Toolbox, 
-% Journal of Power Sources, 2020, submitted
+% Journal of Power Sources, 2021
 % [2] Torchio et al., A matlab framework based on a finite novolume model
 % suitable for Li-ion battery design, simulation, and control, Journal of
 % the Electrochemical Society, 2016

@@ -4,7 +4,7 @@ clear all; close all
 % Script to obtain the data for the  comparison of the numerical methods 
 % of [1],[2],[3] Fig. 6 in the associated paper [1]) 
 %
-% Model Simplifications and Its Impact on Computational Complexity for an 
+% Model Simplifications and Their Impact on Computational Complexity for an 
 % Electrochemistry-Based Battery Modeling Toolbox
 %
 % Authors: Z. Khalik, M.C.F. Donkers, H.J. Bergveld
@@ -12,9 +12,9 @@ clear all; close all
 % This file is licensed under the BSD 3-Clause License
 %
 % References
-% [1] Khalik et al., Model Simplifications and Its Impact on Computational 
+% [1] Khalik et al., Model Simplifications and Their Impact on Computational 
 % Complexity for an Electrochemistry-Based Battery Modeling Toolbox, 
-% Journal of Power Sources, 2020, submitted
+% Journal of Power Sources, 2021
 % [2] Xia et al, A computationally efficient implementation of a full and
 % reduced-order electrochemistry-based model for Li-ion batters, Applied
 % Energy, 2017

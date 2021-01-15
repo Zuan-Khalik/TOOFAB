@@ -11,9 +11,9 @@
 % TOOFAB is licensed under the BSD 3-Clause License
 %
 % References
-% [1] Khalik et al., Model Simplifications and Its Impact on Computational 
+% [1] Khalik et al., Model Simplifications and Their Impact on Computational 
 % Complexity for an Electrochemistry-Based Battery Modeling Toolbox, 
-% Journal of Power Sources, 2020, submitted
+% Journal of Power Sources, 2021
 % [2] Smith et al., Control oriented 1d electrochemical model of lithium 
 % ion battery, Energy Conversion Management, 2007
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 

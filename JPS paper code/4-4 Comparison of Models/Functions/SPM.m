@@ -2,7 +2,7 @@
 %
 % Function to simulate the SPM model used in [1]
 %
-% Model Simplifications and Its Impact on Computational Complexity for an 
+% Model Simplifications and Their Impact on Computational Complexity for an 
 % Electrochemistry-Based Battery Modeling Toolbox
 %
 % Authors: Z. Khalik, M.C.F. Donkers, H.J. Bergveld
@@ -10,9 +10,9 @@
 % This file is licensed under the BSD 3-Clause License
 %
 % References
-% [1] Khalik et al., Model Simplifications and Its Impact on Computational 
+% [1] Khalik et al., Model Simplifications and Their Impact on Computational 
 % Complexity for an Electrochemistry-Based Battery Modeling Toolbox, 
-% Journal of Power Sources, 2020, submitted
+% Journal of Power Sources, 2021
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 function out = DFN(input_current,tf,init_cond,param)
