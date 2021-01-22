@@ -20,7 +20,7 @@ p.set_simp = [2 2 2 2 1 0];
 
 %Choose C-rate for charging and discharging
 p.Crate_charge = 0.5; 
-p.Crate_discharge = 1;
+p.Crate_discharge = 0.5;
 
 %Choose step sizes for the various phases in the cycle. Note that the
 %parameter values have no significant meaning, and is only meant to show
@@ -30,7 +30,7 @@ p.dt_discharge = 4;
 p.dt_CV = 3;
 
 %Run simulation 
-out = DFN(@cycle,2e5,0,p); 
+out = DFN(@cycle,2e5,1,p); 
 
 %% Plot results
 % Choose at which time step to show internal state variables

@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V1.0.2
+% V1.0.3
 %
 % Simulation of the DFN model
 % 
@@ -940,7 +940,7 @@ x = linspace(0,1,npoints);
 w = linspace(p.s0_neg, p.s100_neg,npoints);                             % negative electrode stoichiometry
 z = linspace(p.s0_pos, p.s100_pos,npoints);                             % positive electrode stoichiometry
 
-if isfield(p,'EMF') && not(isfield(p,'EMF') && isfield(p,'U_neg') && isfield(p,'U_pos'))
+if p.equil_mode
     EMF = p.EMF(x); 
     U_neg = p.U_neg(w); 
     U_pos = EMF+U_neg; 
@@ -1008,6 +1008,12 @@ for i = 1:length(f)
     if not(strcmp(f{i},'grid'))
         p.(f{i}) = param.(f{i});
     end
+end
+
+if isfield(param,'EMF') && not(isfield(param,'EMF') && isfield(param,'U_neg') && isfield(param,'U_pos'))
+    p.equil_mode = 1;
+else
+    p.equil_mode = 0;
 end
 
 if isfield(param,'simp')
