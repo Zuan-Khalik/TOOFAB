@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V1.0.3
+% V1.0.5
 %
 % Simulation of the DFN model
 % 
@@ -74,6 +74,7 @@ else
 end
     
 par_or.EMF = p.EMF; par_or.U_pos = p.U_pos_out; par_or.U_neg = p.U_neg_out;
+par_or.dU_pos = p.dU_pos; par_or.dU_neg = p.dU_neg; 
 par_or.cs_max_neg = p.cs_max_neg; par_or.cs_max_pos = p.cs_max_pos; 
 m.dummy = 0; 
 m = fcn_system_matrices(p,m);
@@ -133,10 +134,11 @@ dt_or = p.dt;
 %% Simulation
 t= 1;
 ic = 0; 
+kl = 1;
+kl2 = 0;
 while not(end_simulation)
     %- Inner loop --------------------------------------------------------%
     tic()
-%     t_vec= [t_vec t_vec(end)+p.dt]; 
     dt_prev = p.dt;
     if input_mode==2
         if nargout(input_current) == 4
@@ -148,11 +150,17 @@ while not(end_simulation)
             error('input_current detected as a function handle, but does not have the required inputs and outputs defined.')
         end
     end
+    
     if max_iterations %if max iterations were exceeded in the Newton's algorithm at the previous time step
         p.dt = dt_next; %decrease the time step
-    elseif not(max_iterations) && not(dt_or==p.dt)
-        p.dt = dt_or; %if max iterations were not exceeded in the Newton's algorithm at the previous step (i.e., algorithm converged), choose time step as the originally chosen time step
+%     elseif not(max_iterations) && not(dt_or==p.dt) && kl2==0 
+    else
+        p.dt = ceil(t_vec(t)-dt_or)+dt_or-t_vec(t); %if max iterations were not exceeded in the Newton's algorithm at the previous step (i.e., algorithm converged), choose time step as the originally chosen time step
+        if p.dt == 0
+            p.dt = dt_or;
+        end
     end
+    
     if p.dt<1e-60 %if the time step is very small it means that the Newton's algorithm could not converge even after choosing a very small time step. 
         warning('Algorithm did not converge at time %d after lowering the sampling time. Most likely, the model is being pushed into an infeasible region (Either cs>1 or ce<0). Try changing the input or parameters. Stopping simulation',t_vec(end))
         end_simulation =1;
@@ -179,11 +187,11 @@ while not(end_simulation)
        % If algorithm doesn't converge, then display a warning
         if k==p.iter_max
             if not(max_iterations)
-                dt_or = p.dt; 
                 ic = 0; 
             end
             warning_set = 1;
             max_iterations = 1;
+            dt_inter = 0;
             ic = ic+1;
             end_simulation = 0;
             break
@@ -191,10 +199,16 @@ while not(end_simulation)
         % If criterium for convergence is met, then break loop
         if(conv_check<p.tol ||end_simulation==1)
             max_iterations = 0;
+            kl = 1;
             break
         end
         [J_phis,p] = fcn_J(cs(:,t+1),ce(:,t+1),jn(:,t+1),jn(:,t+1),i0(:,t+1),eta(:,t+1),eta2(:,t+1),T_prevt,p,m); 
-        phis_prev = real(phis_prev-(J_phis\F_phis)); 
+        
+        if t==1
+            phis_prev = real(phis_prev-(J_phis\F_phis)); 
+        else
+            phis_prev = real(phis_prev-(J_phis\F_phis)); 
+        end
         
     end
     phis(:,t+1) = phis_prev; 
@@ -250,6 +264,9 @@ while not(end_simulation)
         warning('Voltage exceeded specified bounds. Stopping the simulation.')
         end_simulation=1;
     end
+    if kl>4
+        end_simulation = 1;
+    end
     if end_simulation==1
         break
     end
@@ -263,6 +280,7 @@ while not(end_simulation)
             dt_next = 1e-20*p.dt;
         end
         phis_prev = phis(:,t);
+        kl = kl+1;
     else
         cs_prevt = cs(:,t+1); 
         ce_prevt = ce(:,t+1); 
@@ -424,7 +442,7 @@ z = cs_bar(p.nn+1:end)/p.cs_max_pos;
 
 if not(isreal(w(1)))
     w = 0.5*ones(p.nn,1); 
-    z = 0.5*ones(p.nn,1); 
+    z = 0.5*ones(p.np,1); 
 end
 
 U = [p.U_neg(w); p.U_pos(z)]; 
@@ -438,6 +456,11 @@ else
     exp2 = exp(-p.alpha_c*p.F*eta/(p.R*T)); 
     F_phis = p.F*jn./i0-(exp1-exp2);
 end
+
+if not(isreal(F_phis))
+    p.warning_i0 = 1;
+end
+
 end
 
 function [J_phis,p] = fcn_J(cs,ce,jn,j1,i0,eta,eta2,T,p,m)
@@ -481,7 +504,7 @@ z = cs_bar(p.nn+1:end)/p.cs_max_pos;
 
 if not(isreal(w(1))) || isnan(w(1))
     w = 0.5*ones(p.nn,1); 
-    z = 0.5*ones(p.nn,1); 
+    z = 0.5*ones(p.np,1); 
 end
 
 dUdcs = diag([p.dU_neg(w)/p.cs_max_neg; p.dU_pos(z)/p.cs_max_pos]); 
