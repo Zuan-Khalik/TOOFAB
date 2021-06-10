@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V1.0.5
+% V1.0.6
 %
 % Simulation of the DFN model
 % 
@@ -237,7 +237,7 @@ while not(end_simulation)
         p.Cbat = Cbat_new;
         soc_prevt = Qs/p.Cbat; 
     end
-    soc(t+1)= soc_prevt+p.dt*i_app(t+1)/(p.Cbat); 
+    soc(t+1) = compute_soc(cs(:,t+1),p); 
     if p.set_simp(6)
         stoich = [cs(p.nn+p.np+1:p.nn+p.np+p.nn,t+1)/p.cs_max_neg; cs(2*p.nn+p.np+1:end,t+1)/p.cs_max_pos];
     else
