@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V1.0.6
+% V1.0.7
 %
 % Simulation of the DFN model
 % 
@@ -155,7 +155,7 @@ while not(end_simulation)
         p.dt = dt_next; %decrease the time step
 %     elseif not(max_iterations) && not(dt_or==p.dt) && kl2==0 
     else
-        p.dt = ceil(t_vec(t)-dt_or)+dt_or-t_vec(t); %if max iterations were not exceeded in the Newton's algorithm at the previous step (i.e., algorithm converged), choose time step as the originally chosen time step
+        p.dt = dt_or-mod(t_vec(t),dt_or); %if max iterations were not exceeded in the Newton's algorithm at the previous step (i.e., algorithm converged), choose time step as the originally chosen time step
         if p.dt == 0
             p.dt = dt_or;
         end
