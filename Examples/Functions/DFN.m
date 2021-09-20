@@ -142,8 +142,11 @@ while not(end_simulation)
     dt_prev = p.dt;
     if input_mode==2
         if nargout(input_current) == 4
-            [i_app(t+1),mem,end_simulation,dt_or] = input_current(t,t_vec(t),i_app,V,soc,cs,ce,phis,phie,mem,p); 
-            p.dt = dt_or;
+            [i_app(t+1),mem,end_simulation,dt_user] = input_current(t,t_vec(t),i_app,V,soc,cs,ce,phis,phie,mem,p); 
+            if dt_user>=dt_or
+                dt_or = dt_user;
+                p.dt = dt_or;
+            end
         elseif nargout(input_current)==3
             [i_app(t+1),mem,end_simulation] = input_current(t,t_vec(t),i_app,V,soc,cs,ce,phis,phie,mem,p);
         else
