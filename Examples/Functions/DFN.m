@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V1.0.7
+% V1.0.8
 %
 % Simulation of the DFN model
 % 
@@ -1021,8 +1021,10 @@ if size(U_neg_full,1)>1
 end
 dU_neg = (U_neg_full(2:end)-U_neg_full(1:end-1))./(x(2:end)-x(1:end-1)); 
 dU_pos = (U_pos_full(2:end)-U_pos_full(1:end-1))./(x(2:end)-x(1:end-1)); 
-p.dU_pos = @(z) qinterp1(x(2:end)',dU_pos',z); 
-p.dU_neg= @(w) qinterp1(x(2:end)',dU_neg',w);  
+dU_neg_more = interp1(x(2:end)',dU_neg',x,'linear','extrap');
+dU_pos_more = interp1(x(2:end)',dU_pos',x,'linear','extrap');
+p.dU_pos = @(z) qinterp1(x',dU_pos_more',z); 
+p.dU_neg= @(w) qinterp1(x',dU_neg_more',w);  
 end
 
 function p = process_param(p,param)
