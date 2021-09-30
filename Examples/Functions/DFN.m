@@ -609,7 +609,7 @@ else
         se_init = [p.s100_neg; p.s100_pos; p.s0_neg; p.s0_pos]; 
         Closs = fcn_Q_inv(init_cond(2),se_init,0,p);
         j2_avg_tot = Closs/(p.F*p.dt*p.dx_n*p.A_surf*p.a_s_neg*p.nn); 
-        Rf = p.Rf+p.dt*p.V_SEI./p.sigma_SEI.*j2_avg_tot; 
+        Rf = p.Rf+(p.dt*p.V_SEI./p.sigma_SEI.*j2_avg_tot)*[ones(p.nn,1); zeros(p.np,1)]; 
     else
         Closs = p.Closs_init;
         Rf = p.Rf; 
