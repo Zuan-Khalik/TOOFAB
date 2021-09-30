@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V1.0.8
+% V1.1.0
 %
 % Simulation of the DFN model
 % 
@@ -538,7 +538,7 @@ function [ cs, ce, phis,T,Closs,Rf] = init(p,m,init_cond)
 %- Initial conditions for the states cs, ce, phis, phie. -----------------%
 %-------------------------------------------------------------------------%
 if isstruct(init_cond)
-    if not(isfield(init_cond,'cs')) || not(isfield(init_cond,'cs'))
+    if not(isfield(init_cond,'cs')) || not(isfield(init_cond,'ce'))
         error('Initial condition for cs and ce are not specified in init_cond')
     else
         cs = init_cond.cs; 
@@ -576,12 +576,12 @@ else
     cs0_pos = p.s0_pos*p.cs_max_pos;
     cs100_pos = p.s100_pos*p.cs_max_pos;
 
-    if init_cond >2
+    if init_cond(1) >2
         x = linspace(0,1,10000); 
         EMF = p.U_pos((p.s100_pos-p.s0_pos)*x+p.s0_pos)-p.U_neg((p.s100_neg-p.s0_neg)*x+p.s0_neg); 
         soc_init = interp1(EMF,x,init_cond,'linear','extrap'); 
     else
-        soc_init = init_cond;
+        soc_init = init_cond(1);
     end
 
     if p.set_simp(6)
@@ -605,8 +605,15 @@ else
     phis = [p.U_neg(w); p.U_pos(z)]; 
 
     T = p.T_amb;
-    Closs = p.Closs_init;
-    Rf = p.Rf; 
+    if length(init_cond)>1
+        se_init = [p.s100_neg; p.s100_pos; p.s0_neg; p.s0_pos]; 
+        Closs = fcn_Q_inv(init_cond(2),se_init,0,p);
+        j2_avg_tot = Closs/(p.F*p.dt*p.dx_n*p.A_surf*p.a_s_neg*p.nn); 
+        Rf = p.Rf+p.dt*p.V_SEI./p.sigma_SEI.*j2_avg_tot; 
+    else
+        Closs = p.Closs_init;
+        Rf = p.Rf; 
+    end
     
 end
 end
@@ -649,6 +656,48 @@ end
 end
 stoich_Q = x; 
 Q = (stoich_Q(1)-stoich_Q(3))*p.epss_neg*p.delta_neg*p.A_surf*p.cs_max_neg*p.F; 
+end
+
+function [Closs] = fcn_Q_inv(Q,stoich_Q_prev,indicator,p)
+x_prev = [stoich_Q_prev; 0];  
+gamma_neg = mean(p.epss_neg)*p.delta_neg*p.cs_max_neg*p.A_surf*p.F; 
+gamma_pos = mean(p.epss_pos)*p.delta_pos*p.cs_max_pos*p.A_surf*p.F;
+Q0 = p.s100_neg_fresh*gamma_neg+p.s100_pos_fresh*gamma_pos; 
+k = 1; 
+
+if p.Cbat-Q<=500 || indicator
+    n_parts = 1;
+else
+    n_parts = ceil((p.Cbat-Q)/500);
+end
+Q_orig = Q; 
+for i = 1:n_parts
+    Q = p.Cbat-500*i; 
+    if i==n_parts
+        Q = Q_orig;
+    end
+    x_prev = [x_prev(1:4); Q];  
+while(1)
+    F = [x_prev(1)*gamma_neg+x_prev(2)*gamma_pos-(Q0-x_prev(5));...
+        p.U_pos(x_prev(2))-p.U_neg(x_prev(1))-p.OCV_max;...
+        x_prev(3)*gamma_neg+x_prev(4)*gamma_pos-(Q0-x_prev(5));...
+        p.U_pos(x_prev(4))-p.U_neg(x_prev(3))-p.OCV_min;...
+        Q-(x_prev(1)-x_prev(3))*p.epss_neg*p.delta_neg*p.A_surf*p.cs_max_neg*p.F]; 
+    J = [gamma_neg gamma_pos 0 0 1; -p.dU_neg(x_prev(1)) p.dU_pos(x_prev(2)) 0 0 0; ....
+        0 0 gamma_neg gamma_pos 1;0 0 -p.dU_neg(x_prev(3)) p.dU_pos(x_prev(4)) 0;...
+        -p.epss_neg*p.delta_neg*p.A_surf*p.cs_max_neg*p.F 0 p.epss_neg*p.delta_neg*p.A_surf*p.cs_max_neg*p.F 0 0]; 
+    x = x_prev-(J\F);
+    if norm(x-x_prev,2)<1e-10
+        break
+    end
+    x_prev= x;
+    k = k+1; 
+    if k>1000
+        break
+    end
+end
+end
+Closs = x_prev(5); 
 end
 
 function [ m ] = fcn_system_matrices( p,m )
@@ -942,6 +991,9 @@ if p.ageing
     se_init = [p.s100_neg; p.s100_pos; p.s0_neg; p.s0_pos]; 
     if isstruct(init_cond)
         Cl_prevt = init_cond.Closs;
+    elseif length(init_cond)>1
+        se_init = [p.s100_neg; p.s100_pos; p.s0_neg; p.s0_pos]; 
+        Cl_prevt = fcn_Q_inv(init_cond(2),se_init,0,p);
     else
         Cl_prevt = p.Closs_init; 
     end
