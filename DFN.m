@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V1.1.0
+% V1.1.1
 %
 % Simulation of the DFN model
 % 
@@ -1046,7 +1046,7 @@ if p.equil_mode
     U_neg_out1 = U_pos_out1-EMF; 
 
     U_pos_out = griddedInterpolant(flip(z),flip(U_pos_out1)); 
-    U_neg_out = griddedInterpolant(w,U_neg_out1); 
+    U_neg_out = griddedInterpolant([0 w],[2 U_neg_out1]); 
 
     U_pos_full = U_pos_out(x); 
     U_neg_full = U_neg_out(x); 
