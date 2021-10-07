@@ -61,6 +61,7 @@ Zuan Khalik (https://www.tue.nl/en/research/researchers/zuan-khalik/)
 
 ## References
 [1] Z. Khalik, M.C.F. Donkers, H.J. Bergveld, "Model Simplifications and Their Impact on Computational Complexity for an Electrochemistry-Based Battery Modeling Toolbox", in Journal of Power Sources, 2021
+
 [2] Z. Khalik, M.C.F. Donkers, H.J. Bergveld, "Parameter estimation of the Doyle–Fuller–Newman model for Lithium-ion batteries by parameter normalization, grouping, and sensitivity analysis", in Journal of Power Sources, 2021
 
 ## License
