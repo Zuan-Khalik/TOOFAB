@@ -27,7 +27,7 @@ This toolbox only requires a working version of MATLAB.
 The toolbox has been tested with MATLAB R2020b, but should work with any MATLAB version equal to or newer than MATLAB R2016b. This compatibility requirement comes from the feature that allows local functions, added to MATLAB since version R2016b. A legacy version compatible with older MATLAB versions is planned to be added in the future, or upon request. 
 
 ### Using the toolbox
-Simulation of the DFN model using TOOFAB can be done with the DFN function defined as
+**Simulation** of the DFN model using TOOFAB can be done with the DFN function defined as
 
 out = DFN(input_current,tf,init_cond,param)
 
@@ -39,7 +39,7 @@ where
 - init_cond: specifies the initial condition, which can be either an initial state-of-charge, as a value between 0 and 1, an initial voltage, or a MATLAB struct where the initial condition for a non-steady-state c_s, c_e, and T can be specified. Further details on how init_cond can be specified can be found in the documentation of the toolbox. 
 - param: can be used to change user-configurable parameters, such as all the model parameters, and simulation parameters, e.g., the temporal and spatial grid discretization variables. Note that this field is optional, and a default set of parameters is already contained in the DFN function. 
 
-Parameter estimation of the DFN model using TOOFAB can be done with the parameter_determination function defined as
+**Parameter estimation** of the DFN model using TOOFAB can be done with the parameter_determination function defined as
 
 [p, ph, results] = parameter_determination(equil_data,est_data,options_in) 
 
