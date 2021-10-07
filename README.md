@@ -3,7 +3,7 @@ Version 1.5 (issued 07-10-2021)
 
 A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for analysis and control. 
 
-Parameter estimation of the DFN model including a sensitivity analysis. 
+Parameter estimation of the DFN model from experiment current/voltage data including a sensitivity analysis. 
 
 ## Features
 
