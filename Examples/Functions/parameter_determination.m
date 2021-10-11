@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V0.5
+% V0.5.2
 %
 % Estimate DFN parameters
 % 
@@ -41,6 +41,7 @@ end
 options.sensitivity_analysis=1;
 options.parameter_estimation = 1;
 options.sens_perturb = 0.1; 
+options.sens_perturb_mode = 1; %-1 for only lower pertubation, 1 for only higher pertubation, and 0 for both
 options.plot_sensitivity = 1;
 options.par_names_plot = {'$s_{0,n}$', '$s_{0,p}$','$s_{100,n}$', '$s_{100,p}$','$\hat{D}_{s,n}$', '$\hat{D}_{s,p}$', '$\hat{D}_e$', '$\hat{p}_n$', '$\hat{p}_{sep}$', '$\hat{p}_p$', '$t_+^0$',...
 '$dlnfdce$','$\hat{\sigma}_n$', '$\hat{\sigma}_p$','$\hat{\kappa}$', '$\hat{R}_{f,n}$', '$\hat{R}_{cc}$',...
@@ -366,24 +367,32 @@ equil = determine_equilibrium_potentials(equil_data,par_nom,options); %determine
 y_nom = model(sens_data,equil,par_nom); %Obtain the model output with the nominal parameters
 
 parfor k = 1:N_par
+    if not(options.sens_perturb_mode==1)
     beta_perm_low = beta_nom; 
     beta_perm_low(k) = (0.5-options.sens_perturb); 
     par_perm_low = beta2par(beta_perm_low,par_names,ranges,methods);
     equil = determine_equilibrium_potentials(equil_data,par_perm_low,options); %determine the equilibrium potential based on the lower permutation of the parameters
     y_perm_low{k} = model(sens_data,equil,par_perm_low); %Obtain the model output with the lower permutation of the parameters
-
+    dydpar_low(k,:) = -(y_perm_low{k}-y_nom)/options.sens_perturb; %Compute the sensitivity of the model output to the parameters based on the difference between the lower permutation of the parameters and the nominal parameters
+    end
+    
+    if not(options.sens_perturb_mode==-1)
     beta_perm_high = beta_nom; 
     beta_perm_high(k) = (0.5+options.sens_perturb);
     par_perm_high = beta2par(beta_perm_high,par_names,ranges,methods);
     equil = determine_equilibrium_potentials(equil_data,par_perm_high,options); %determine the equilibrium potential based on the higher permutation of the parameters
     y_perm_high{k} = model(sens_data,equil,par_perm_high); %Obtain the model output with the higher permutation of the parameters
-
-    dydpar_low(k,:) = -(y_perm_low{k}-y_nom)/options.sens_perturb; %Compute the sensitivity of the model output to the parameters based on the difference between the lower permutation of the parameters and the nominal parameters
     dydpar_high(k,:) = (y_perm_high{k}-y_nom)/options.sens_perturb; %Compute the sensitivity of the model output to the parameters based on the difference between the higher permutation of the parameters and the nominal parameters
+    end
 end
-
-S = 0.5*(dydpar_low+dydpar_high); %Determine the sensitivity of the model output to the parameters are the average of the two computed sensitivities 
-
+switch options.sens_perturb_mode
+    case -1
+        S = dydpar_low; 
+    case 1
+        S = dydpar_high; 
+    case 0
+        S = 0.5*(dydpar_low+dydpar_high); %Determine the sensitivity of the model output to the parameters are the average of the two computed sensitivities 
+end
 [Q,R,P] = qr(S');  
 
 Pi_init = 1:N_par; %Initial ranking of the parameters

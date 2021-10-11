@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V1.1.1
+% V1.1.2
 %
 % Simulation of the DFN model
 % 
@@ -267,8 +267,12 @@ while not(end_simulation)
         warning('Voltage exceeded specified bounds. Stopping the simulation.')
         end_simulation=1;
     end
-    if kl>4
+    if kl>4 
         end_simulation = 1;
+    end
+    if t>5 &&(t_vec(t)-t_vec(t-5))<1e-4
+        end_simulation = 1;
+        warning('Simulation is not progressing. Stopping the simulation. Most likely causes are: too high applied current, ce close 0, cs close to cs_max or close to 0')
     end
     if end_simulation==1
         break
@@ -280,7 +284,7 @@ while not(end_simulation)
     if max_iterations
         dt_next = 0.5*p.dt; 
         if ic>3
-            dt_next = 1e-20*p.dt;
+            dt_next = 1e-11*p.dt;
         end
         phis_prev = phis(:,t);
         kl = kl+1;
