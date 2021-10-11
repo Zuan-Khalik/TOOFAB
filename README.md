@@ -1,5 +1,5 @@
 # TOOFAB(ulous) (Toolbox for FAst Battery simulation)
-Version 1.5 (issued 07-10-2021)
+Version 1.5.1 (issued 11-10-2021)
 
 A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for analysis and control. 
 
