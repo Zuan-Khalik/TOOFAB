@@ -3,6 +3,8 @@ Version 1.5.1 (issued 11-10-2021)
 
 A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for analysis and control. 
 
+Parameter estimation of the DFN model from experimental current/voltage data including a sensitivity analysis. 
+
 ## Features
 
 ### Current features
@@ -12,7 +14,7 @@ A fast implementation of the Doyle-Fuller-Newman (DFN) battery model usable for 
 - Option to use a battery ageing model describing the side reactions that lead to Li-ion loss due to the build-up SEI (solid-electrolyte interphase) layer.
 - Option to use a lumped thermal model describing the thermal dynamics.  
 - Ability to efficiently use the model in a closed-loop setting. 
-- NEW: Estimate DFN model parameters based on experimental current/voltage data (work in progress)
+- **NEW**: Estimate DFN model parameters based on experimental current/voltage data (functional, but still work in progress in terms of features and documentation)
 
 ### Coming features
 - Documentation for the parameter_determination function
@@ -27,7 +29,7 @@ This toolbox only requires a working version of MATLAB.
 The toolbox has been tested with MATLAB R2020b, but should work with any MATLAB version equal to or newer than MATLAB R2016b. This compatibility requirement comes from the feature that allows local functions, added to MATLAB since version R2016b. A legacy version compatible with older MATLAB versions is planned to be added in the future, or upon request. 
 
 ### Using the toolbox
-Simulation of the DFN model using TOOFAB can be done with the DFN function defined as
+**Simulation** of the DFN model using TOOFAB can be done with the DFN function defined as
 
 out = DFN(input_current,tf,init_cond,param)
 
@@ -39,7 +41,7 @@ where
 - init_cond: specifies the initial condition, which can be either an initial state-of-charge, as a value between 0 and 1, an initial voltage, or a MATLAB struct where the initial condition for a non-steady-state c_s, c_e, and T can be specified. Further details on how init_cond can be specified can be found in the documentation of the toolbox. 
 - param: can be used to change user-configurable parameters, such as all the model parameters, and simulation parameters, e.g., the temporal and spatial grid discretization variables. Note that this field is optional, and a default set of parameters is already contained in the DFN function. 
 
-Parameter estimation of the DFN model using TOOFAB can be done with the parameter_determination function defined as
+**Parameter estimation** of the DFN model using TOOFAB can be done with the parameter_determination function defined as
 
 [p, ph, results] = parameter_determination(equil_data,est_data,options_in) 
 
@@ -61,6 +63,7 @@ Zuan Khalik (https://www.tue.nl/en/research/researchers/zuan-khalik/)
 
 ## References
 [1] Z. Khalik, M.C.F. Donkers, H.J. Bergveld, "Model Simplifications and Their Impact on Computational Complexity for an Electrochemistry-Based Battery Modeling Toolbox", in Journal of Power Sources, 2021
+
 [2] Z. Khalik, M.C.F. Donkers, H.J. Bergveld, "Parameter estimation of the Doyle–Fuller–Newman model for Lithium-ion batteries by parameter normalization, grouping, and sensitivity analysis", in Journal of Power Sources, 2021
 
 ## License
