@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V0.5.2
+% V0.5.3
 %
 % Estimate DFN parameters
 % 
@@ -332,7 +332,7 @@ if options.equil_mode
     U_neg_out1 = U_pos_out1-EMF; 
 
     U_pos_out = griddedInterpolant(flip(z),flip(U_pos_out1)); 
-    U_neg_out = griddedInterpolant(w,U_neg_out1); 
+    U_neg_out = griddedInterpolant([0 w],[2 U_neg_out1]); 
 
     U_pos_full = U_pos_out(x); 
     U_neg_full = U_neg_out(x); 
@@ -474,7 +474,13 @@ end
 
 p.thermal_dynamics = 0; 
 
-out = DFN([data.t' data.I'],data.t(end),data.V(1),p); 
+if isfield(options,'Caged')
+    p.ageing = 1;
+    out = DFN([data.t' data.I'],data.t(end),[data.V(1), options.Caged],p); 
+else
+    p.ageing = 0;
+    out = DFN([data.t' data.I'],data.t(end),data.V(1),p); 
+end
 
 V = interp1(out.t,out.V,data.t);  
 T = interp1(out.t,out.T,data.t);  

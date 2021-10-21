@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% V1.1.2
+% V1.1.3
 %
 % Simulation of the DFN model
 % 
@@ -181,6 +181,9 @@ while not(end_simulation)
     
     m = fcn_system_matrices2(p,m,cs_prevt,ce_prevt); 
     
+    if t_vec(t)==1823
+        temp = 1;
+    end
     % Solve set of AEs using Newton's method at time t
     for k=1:p.iter_max
         % Obtain function matrix and Jacobian       
@@ -447,7 +450,7 @@ end
 w = cs_bar(1:p.nn)/p.cs_max_neg; 
 z = cs_bar(p.nn+1:end)/p.cs_max_pos; 
 
-if not(isreal(w(1)))
+if not(isreal(w)) || not(isreal(z))
     w = 0.5*ones(p.nn,1); 
     z = 0.5*ones(p.np,1); 
 end
@@ -509,7 +512,7 @@ di0dphis = diag(di0dcs)*dcsdphis+diag(di0dce)*dcedphis;
 w = cs_bar(1:p.nn)/p.cs_max_neg; 
 z = cs_bar(p.nn+1:end)/p.cs_max_pos;
 
-if not(isreal(w(1))) || isnan(w(1))
+if not(isreal(w)) || not(isreal(z)) || any(isnan(w)) || any(isnan(z))
     w = 0.5*ones(p.nn,1); 
     z = 0.5*ones(p.np,1); 
 end
@@ -583,7 +586,7 @@ else
     if init_cond(1) >2
         x = linspace(0,1,10000); 
         EMF = p.U_pos((p.s100_pos-p.s0_pos)*x+p.s0_pos)-p.U_neg((p.s100_neg-p.s0_neg)*x+p.s0_neg); 
-        soc_init = interp1(EMF,x,init_cond,'linear','extrap'); 
+        soc_init = interp1(EMF,x,init_cond(1),'linear','extrap'); 
     else
         soc_init = init_cond(1);
     end
