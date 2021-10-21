@@ -47,6 +47,9 @@ if nargin>3
     p = process_param(p,varargin{1}); 
 end
 
+if length(init_cond)>1
+    p.ageing = 1;
+end
 par_or = p;
 time_max = final_time; 
 if isa(input_current,'function_handle')
